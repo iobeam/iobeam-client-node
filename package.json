@@ -12,15 +12,19 @@
   "devDependencies": {
     "eslint": "^1.2.0",
     "eslint-plugin-react": "^3.3.1",
+    "jest-cli": "^0.5.7",
     "uglify-js": "~2.4.23"
   },
   "scripts": {
     "start": "node src/test.js",
     "lint": "eslint --ignore-pattern src/*.min.js src/ || echo",
-    "build": "uglifyjs -cm src/iobeam.js > src/iobeam.min.js"
+    "build": "uglifyjs -cm src/iobeam.js > src/iobeam.min.js",
+    "test": "jest"
   },
   "author": "iobeam",
   "jest": {
-    "rootDir": "./src"
+    "rootDir": ".",
+    "testDirectoryName": "tests",
+    "verbose": true
   }
 }

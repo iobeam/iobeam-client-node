@@ -1,9 +1,15 @@
+"use strict";
+
 const RequestResults = require("../constants/RequestResults");
 const ApiException = require("../exceptions/ApiException");
 const Exception = require("../exceptions/Exception");
 
 function isFunction(f) {
     return f !== null && typeof(f) === "function";
+}
+
+function isString(s) {
+    return s !== null && typeof(s) === "string";
 }
 
 module.exports = {
@@ -23,8 +29,10 @@ module.exports = {
     },
 
     assertValidToken: function(token) {
-        if (token === null || typeof(token) === "undefined") {
+        if (!isString(token)) {
             throw new ApiException("Need a valid token.");
+        } else if (token.length <= 0) {
+            throw new ApiException("token is too short: " + token.length);
         }
     },
 
@@ -37,7 +45,7 @@ module.exports = {
     },
 
     assertValidDeviceId: function(deviceId) {
-        if (deviceId === null || typeof(deviceId) !== "string") {
+        if (!isString(deviceId)) {
             throw new ApiException("Invalid deviceId: " + JSON.stringify(deviceId));
         } else if (deviceId.length <= 0) {
             throw new ApiException("deviceId too short: " + deviceId.length);
