@@ -1,4 +1,6 @@
 "use strict";
+const fs = require("fs");
+const path = require("path");
 
 const Requester = require("./http/Requester");
 const Utils = require("./utils/Utils");
@@ -6,8 +8,10 @@ const Utils = require("./utils/Utils");
 const Devices = require("./endpoints/Devices");
 const Imports = require("./endpoints/Imports");
 
+const _ID_FILENAME = "/iobeam_device_id";
+const UTF8_ENC = "utf8";
 
-function _Client(projectId, projectToken, services, deviceId, path) {
+function _Client(projectId, projectToken, services, deviceId, p) {
     Utils.assertValidProjectId(projectId);
     Utils.assertValidToken(projectToken);
     Utils.assertValidRequester(Requester);
@@ -18,11 +22,29 @@ function _Client(projectId, projectToken, services, deviceId, path) {
     let _deviceId = deviceId || null;
     const _dataset = {};
 
+    // Use the disk cache if the id is there / it is provided.
+    const _path = p ? path.join(p, _ID_FILENAME) : null;
+    if (_path !== null) {
+        try {
+            _deviceId = fs.readFileSync(_path, UTF8_ENC);
+        } catch (Exception) {
+            // File does not exist or unreadable, ignore.
+        }
+    }
+
     const _services = services;
     const _msgQueue = [];
     let _inProgress = false;
 
     /* Private funcs */
+    function __setDeviceId(deviceId) {
+        Utils.assertValidDeviceId(deviceId);
+        _deviceId = deviceId;
+        if (_path !== null) {
+            fs.writeFile(_path, deviceId, UTF8_ENC);
+        }
+    }
+
     function __hasService(key) {
         if (_services === null || typeof(_services) === "undefined") {
             return false;
@@ -39,8 +61,6 @@ function _Client(projectId, projectToken, services, deviceId, path) {
         if (!_inProgress && _msgQueue.length > 0) {
             _inProgress = true;
             const next = _msgQueue.shift();
-            console.log("next: ");
-            console.log(next);
             next();
         }
     }
@@ -57,9 +77,7 @@ function _Client(projectId, projectToken, services, deviceId, path) {
         },
 
         setDeviceId: function(deviceId) {
-            if (deviceId !== null && typeof(deviceId) === "string") {
-                _deviceId = deviceId;
-            }
+            __setDeviceId(deviceId);
             return self;
         },
 
@@ -72,13 +90,19 @@ function _Client(projectId, projectToken, services, deviceId, path) {
         },
 
         register: function(deviceId, deviceName) {
+            deviceId = deviceId || null;
             if (!__hasService("devices")) {
                 return; // TODO throw exception
+            } else if (_deviceId !== null && deviceId === _deviceId) {
+                return;
+            } else if (_deviceId !== null && deviceId === null) {
+                return;
             }
+
             const cb = function(deviceResp) {
                 console.log(deviceResp);
                 if (deviceResp.success) {
-                    _deviceId = deviceResp.device.device_id;
+                    __setDeviceId(deviceId);
                 }
                 _inProgress = false;
                 __startMsgQueue();
