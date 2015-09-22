@@ -1,3 +1,5 @@
+"use strict";
+
 function ApiException(message) {
     this.message = message;
     this.name = "ApiException";
