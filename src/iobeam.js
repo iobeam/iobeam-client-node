@@ -89,7 +89,7 @@ function _Client(projectId, projectToken, services, deviceId, p) {
             _dataset[seriesName].push(point);
         },
 
-        register: function(deviceId, deviceName) {
+        register: function(deviceId, deviceName, callback) {
             deviceId = deviceId || null;
             if (!__hasService("devices")) {
                 return; // TODO throw exception
@@ -100,10 +100,15 @@ function _Client(projectId, projectToken, services, deviceId, p) {
             }
 
             const cb = function(deviceResp) {
-                console.log(deviceResp);
                 if (deviceResp.success) {
-                    __setDeviceId(deviceId);
+                    __setDeviceId(deviceResp.device.device_id);
                 }
+
+                if (Utils.isCallback(callback)) {
+                    callback(deviceResp.success, deviceResp.device);
+                }
+
+                // Let the message queue progress
                 _inProgress = false;
                 __startMsgQueue();
             };
@@ -113,15 +118,20 @@ function _Client(projectId, projectToken, services, deviceId, p) {
             __startMsgQueue();
         },
 
-        send: function() {
+        send: function(callback) {
             if (!__hasService("imports")) {
                 return; // TODO throw exception
             }
+
             const cb = function(resp) {
-                console.log(resp);
+                if (Utils.isCallback(callback)) {
+                    callback(resp.success);
+                }
+
                 _inProgress = false;
                 __startMsgQueue();
             };
+
             _msgQueue.push(function() {
                 Utils.assertValidDeviceId(_deviceId);
                 _services.imports.import(_projectId, _deviceId, _dataset, cb);
@@ -169,7 +179,8 @@ function _Builder(projectId, projectToken) {
         },
 
         build: function() {
-            const client = _Client(projectId, projectToken, services, _deviceId, _savePath);
+            const client = _Client(
+                projectId, projectToken, services, _deviceId, _savePath);
             if (_regArgs !== null) {
                 client.register(_regArgs.deviceId, _regArgs.deviceName);
             }
