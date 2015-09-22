@@ -34,30 +34,33 @@ module.exports = {
         return _URL_BASE + endpoint;
     },
 
-    getRequestUnauthed: function(url) {
-        return request
+    getRequest: function(url, token) {
+        const ret = request
             .get(url)
             .timeout(TIMEOUT);
+        if (token !== null && typeof(token) === "string") {
+            const tokenStr = "Bearer " + token;
+            ret.set("Authorization", tokenStr);
+        }
+        return ret;
     },
 
-    postRequestUnauthed: function(url, body) {
-        return request
+    postRequest: function(url, body, token) {
+        const ret = request
             .post(url)
             .set("Accept", CONTENT_TYPE)
             .set("Content-Type", CONTENT_TYPE)
-            .send(body)
             .timeout(TIMEOUT);
-    },
 
-    getRequest: function(url, token) {
-        const tokenStr = "Bearer " + token;
-        return this.getRequestUnauthed(url)
-            .set("Authorization", tokenStr);
-    },
+        if (token !== null && typeof(token) === "string") {
+            const tokenStr = "Bearer " + token;
+            ret.set("Authorization", tokenStr);
+        }
 
-    postRequest: function(url, token, body) {
-        const tokenStr = "Bearer " + token;
-        return this.postRequestUnauthed(url, body)
-            .set("Authorization", tokenStr);
+        if (body !== null && typeof(body) !== "undefined") {
+            ret.send(body);
+        }
+
+        return ret;
     }
 };

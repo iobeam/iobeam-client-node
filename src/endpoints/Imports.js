@@ -37,7 +37,7 @@ module.exports = {
             }
         }
 
-        const req = _requester.postRequest(URL, _token, reqBody);
+        const req = _requester.postRequest(URL, reqBody, _token);
         const innerCb = function(status, webResp) {
             if (status === RequestResults.PENDING) {
                 return;
