@@ -28,6 +28,10 @@ module.exports = {
         return isFunction(callback);
     },
 
+    isSet: function(item) {
+        return item !== null && typeof(item) !== "undefined";
+    },
+
     assertValidToken: function(token) {
         if (!isString(token)) {
             throw new ApiException("Need a valid token.");

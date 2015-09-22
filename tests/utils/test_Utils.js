@@ -1,5 +1,5 @@
 "use strict";
-jest.dontMock("../../src/utils/Utils");
+jest.autoMockOff();
 const Utils = require("../../src/utils/Utils");
 
 describe("isCallback", () => {
@@ -15,6 +15,22 @@ describe("isCallback", () => {
     cases.forEach((e) => {
         it(e.msg, () => {
             expect(Utils.isCallback(e.arg)).toBe(e.res);
+        });
+    });
+});
+
+
+describe("isSet", () => {
+    const cases = [
+        {msg: "checks null is not set", arg: null, res: false},
+        {msg: "checks undefined is not set", arg: undefined, res: false},
+        {msg: "checks object is set", arg: {}, res: true},
+        {msg: "checks that string is set", arg: "", res: true}
+    ];
+
+    cases.forEach((e) => {
+        it(e.msg, () => {
+            expect(Utils.isSet(e.arg)).toBe(e.res);
         });
     });
 });

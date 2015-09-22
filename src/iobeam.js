@@ -46,11 +46,11 @@ function _Client(projectId, projectToken, services, deviceId, p) {
     }
 
     function __hasService(key) {
-        if (_services === null || typeof(_services) === "undefined") {
+        if (!Utils.isSet(_services)) {
             return false;
         } else if (!_services.hasOwnProperty(key)) {
             return false;
-        } else if (_services[key] === null || typeof(_services[key]) === "undefined") {
+        } else if (!Utils.isSet(_services[key])) {
             return false;
         } else {
             return true;
