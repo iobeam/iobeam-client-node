@@ -26,7 +26,7 @@ function _Client(projectId, projectToken, services, deviceId, p) {
     const _path = p ? path.join(p, _ID_FILENAME) : null;
     if (_path !== null) {
         try {
-            _deviceId = fs.readFileSync(_path, UTF8_ENC);
+            _deviceId = fs.readFileSync(_path, UTF8_ENC).trim();
         } catch (Exception) {
             // File does not exist or unreadable, ignore.
         }
@@ -41,7 +41,7 @@ function _Client(projectId, projectToken, services, deviceId, p) {
         Utils.assertValidDeviceId(deviceId);
         _deviceId = deviceId;
         if (_path !== null) {
-            fs.writeFile(_path, deviceId, UTF8_ENC);
+            fs.writeFile(_path, deviceId + "\n", UTF8_ENC);
         }
     }
 
@@ -194,4 +194,7 @@ function _Builder(projectId, projectToken) {
     };
 }
 
-module.exports = {Builder: _Builder};
+module.exports = {
+    Builder: _Builder,
+    Datapoint: require("./resources/Datapoint")
+};

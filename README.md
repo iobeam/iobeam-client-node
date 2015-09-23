@@ -47,7 +47,7 @@ At a high-level, here's how it works:
 1. Make sure your device is registered, either generating a `device_id` in
 code or via another method (e.g., our CLI or REST APIs).
 
-1. Create a "data point" object for each time-series data point.
+1. Create a `Datapoint` object for each time-series data point.
 
 1. Add the data point under your `series_name` (e.g., "temperature")
 
@@ -135,11 +135,13 @@ and have no need to save it.
 
 ### Tracking Time-series Data
 
-For each time-series data point, create a "data point" object, which is
-an object containing a `timestamp` property and a `value` property:
+For each time-series data point, create a `Datapoint` object, providing
+a value and timestamp.
 
     t = getTemperature();
-    d = {timestamp: Date.now(), value: t}
+    d = iobeam.Datapoint(t, Date.now());
+    // OR:
+    // d = iobeam.Datapoint(t);
 
 (The timestamp provided should be in milliseconds since epoch. The value
 can be integral or real.)
@@ -154,8 +156,8 @@ example, if you also had a `getHumidity()` function, you could add both
 data points to the same `iobeam.Iobeam`:
 
     now = Date.now();
-    dt = {timestamp: now, value: getTemperature()};
-    dh = {timestamp: now, value: getHumidity()};
+    dt = iobeam.Datapoint(getTemperature(), now);
+    dh = iobeam.Datapoint(getHumidity(), now);
 
     iobeamClient.addDataPoint("temperature", dt)
     iobeamClient.addDataPoint("humidity", dh)
@@ -194,8 +196,8 @@ Here's the full source code for our example:
 
     // Data gathering
     now = Date.now();
-    dt = {timestamp: now, value: getTemperature()};
-    dh = {timestamp: now, value: getHumidity()};
+    dt = iobeam.Datapoint(getTemperature(), now);
+    dh = iobeam.Datapoint(getHumidity(), now);
 
     iobeamClient.addDataPoint("temperature", dt);
     iobeamClient.addDataPoint("humidity", dh);
