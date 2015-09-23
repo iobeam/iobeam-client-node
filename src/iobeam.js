@@ -126,6 +126,11 @@ function _Client(projectId, projectToken, services, deviceId, p) {
             const cb = function(resp) {
                 if (Utils.isCallback(callback)) {
                     callback(resp.success);
+                    for (let k in _dataset) {
+                        if (_dataset.hasOwnProperty(k)) {
+                            delete _dataset[k];
+                        }
+                    }
                 }
 
                 _inProgress = false;
