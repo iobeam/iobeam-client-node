@@ -165,9 +165,13 @@ function _Builder(projectId, projectToken) {
             return this;
         },
 
-        setSavePath: function(path) {
-            if (path !== null && typeof(path) === "string") {
-                _savePath = path;
+        saveToDisk: function(path) {
+            let p = path || null;
+            if (p === null) {
+                p = ".";
+            }
+            if (p !== null && typeof(p) === "string") {
+                _savePath = p;
             }
             return this;
         },
