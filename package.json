@@ -1,8 +1,8 @@
 {
   "name": "iobeam-client",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Client library for connecting to iobeam",
-  "repository": "https://bitbucket.org/440-labs/iobeam-client-node",
+  "repository": "https://github.com/iobeam/iobeam-client-node",
   "license": "Apache 2.0",
   "main": "lib/iobeam.js",
   "dependencies": {
