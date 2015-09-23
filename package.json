@@ -3,22 +3,23 @@
   "version": "0.1.0",
   "description": "Client library for connecting to iobeam",
   "repository": "https://bitbucket.org/440-labs/iobeam-client-node",
-  "private": true,
-  "main": "src/iobeam.js",
+  "license": "Apache 2.0",
+  "main": "lib/iobeam.js",
   "dependencies": {
     "keymirror": "~0.1.1",
     "superagent": "^1.2.0"
   },
   "devDependencies": {
+    "babel": "^5.8.0",
     "eslint": "^1.2.0",
     "eslint-plugin-react": "^3.3.1",
     "jest-cli": "^0.5.7",
     "uglify-js": "~2.4.23"
   },
   "scripts": {
-    "start": "node src/test.js",
     "lint": "eslint --ignore-pattern src/*.min.js src/ || echo",
-    "build": "uglifyjs -cm src/iobeam.js > src/iobeam.min.js",
+    "compile": "babel -d lib/ src/",
+    "prepublish": "npm run compile",
     "test": "jest"
   },
   "author": "iobeam",

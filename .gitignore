@@ -1,6 +1,8 @@
 node_modules/*
+lib/*
 .idea/*
 *~
 .DS_Store
 npm-debug.log
 iobeam_device_id
+test.js
