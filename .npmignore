@@ -1,1 +1,8 @@
 src/
+node_modules/
+.idea/
+*~
+.DS_Store
+npm-debug.log
+iobeam_device_id
+test.js
