@@ -1,6 +1,6 @@
 {
   "name": "iobeam-client",
-  "version": "0.1.6",
+  "version": "0.1.7",
   "description": "Client library for connecting to iobeam",
   "repository": "https://github.com/iobeam/iobeam-client-node",
   "license": "Apache-2.0",
@@ -12,12 +12,14 @@
   "devDependencies": {
     "babel": "5.8.x",
     "eslint": "1.5.x",
-    "jest-cli": "0.5.x"
+    "fs-extra": "^0.24.0",
+    "jest-cli": "0.5.x",
+    "semver": "^5.0.3"
   },
   "scripts": {
     "lint": "eslint src/ || echo",
-    "compile": "babel -d lib/ src/",
-    "prepublish": "npm run compile",
+    "babel": "babel -d lib/ src/",
+    "postinstall": "node compile.js",
     "test": "jest"
   },
   "author": "iobeam",
