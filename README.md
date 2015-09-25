@@ -79,9 +79,9 @@ There are two ways to register a `device_id`:
 
     ...
 
-    var builder = iobeam.Builder(PROJECT_ID, PROJECT_TOKEN)
-                    .saveToDisk()
-                    .register();
+    var builder = new iobeam.Builder(PROJECT_ID, PROJECT_TOKEN)
+                        .saveToDisk()
+                        .register();
     var iobeamClient = builder.build();
 
 (2) Provide your own (must be unique to your project):
@@ -90,9 +90,9 @@ There are two ways to register a `device_id`:
 
     ...
 
-    var builder = iobeam.Builder(PROJECT_ID, PROJECT_TOKEN)
-                    .saveToDisk()
-                    .register('my_desired_id');
+    var builder = new iobeam.Builder(PROJECT_ID, PROJECT_TOKEN)
+                        .saveToDisk()
+                        .register('my_desired_id');
     var iobeamClient = builder.build();
 
 With the `saveToDisk()` call, the `device_id` will be saved to disk at the
@@ -112,9 +112,9 @@ constructor and skip the registration step.
 
     ...
 
-    var builder = iobeam.Builder(PROJECT_ID, PROJECT_TOKEN)
-                    .saveToDisk()
-                    .setDeviceId(DEVICE_ID);
+    var builder = new iobeam.Builder(PROJECT_ID, PROJECT_TOKEN)
+                        .saveToDisk()
+                        .setDeviceId(DEVICE_ID);
     var iobeamClient = builder.build();
 
 You *must* have registered some other way (CLI, website, previous
@@ -125,7 +125,7 @@ installation, etc) for this to work.
 If you don't want the `device_id` to be automatically stored for you, simply
 exclude the `setSavePath()` call while building:
 
-    var builder = iobeam.Builder(PROJECT_ID, PROJECT_TOKEN).register()
+    var builder = new iobeam.Builder(PROJECT_ID, PROJECT_TOKEN).register()
     var iobeamClient = builder.build()
 
 This is useful for cases where you want to persist the ID yourself (e.g.
@@ -140,9 +140,9 @@ For each time-series data point, create a `Datapoint` object, providing
 a value and timestamp.
 
     var t = getTemperature();
-    var d = iobeam.Datapoint(t, Date.now());
+    var d = new iobeam.Datapoint(t, Date.now());
     // OR:
-    // var d = iobeam.Datapoint(t);
+    // var d = new iobeam.Datapoint(t);
 
 (The timestamp provided should be in milliseconds since epoch. The value
 can be integral or real.)
@@ -157,8 +157,8 @@ example, if you also had a `getHumidity()` function, you could add both
 data points to the same `iobeam.Iobeam`:
 
     var now = Date.now();
-    var dt = iobeam.Datapoint(getTemperature(), now);
-    var dh = iobeam.Datapoint(getHumidity(), now);
+    var dt = new iobeam.Datapoint(getTemperature(), now);
+    var dh = new iobeam.Datapoint(getHumidity(), now);
 
     iobeamClient.addDataPoint("temperature", dt)
     iobeamClient.addDataPoint("humidity", dh)
@@ -187,17 +187,17 @@ Here's the full source code for our example:
     ...
 
     // Init iobeam
-    var builder = iobeam.Builder(PROJECT_ID, PROJECT_TOKEN)
-                    .saveToDisk()
-                    .register();
+    var builder = new iobeam.Builder(PROJECT_ID, PROJECT_TOKEN)
+                        .saveToDisk()
+                        .register();
     var iobeamClient = builder.build();
 
     ...
 
     // Data gathering
     var now = Date.now();
-    var dt = iobeam.Datapoint(getTemperature(), now);
-    var dh = iobeam.Datapoint(getHumidity(), now);
+    var dt = new iobeam.Datapoint(getTemperature(), now);
+    var dh = new iobeam.Datapoint(getHumidity(), now);
 
     iobeamClient.addDataPoint("temperature", dt);
     iobeamClient.addDataPoint("humidity", dh);
