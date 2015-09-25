@@ -1,7 +1,7 @@
 "use strict";
 jest.autoMockOff();
 const MockDate = require("mockdate");
-const DataPoint = require("../../src/resources/DataPoint")
+const Datapoint = require("../../src/resources/Datapoint")
 
 describe("datapoint construction", () => {
     const TEST_VAL = 5;
@@ -9,25 +9,25 @@ describe("datapoint construction", () => {
     MockDate.set(TEST_TIME);
 
     it("tests explicit constructor", () => {
-        const dp = new DataPoint(TEST_VAL, TEST_TIME);
+        const dp = new Datapoint(TEST_VAL, TEST_TIME);
         expect(dp.value).toBe(TEST_VAL);
         expect(dp.timestamp).toBe(TEST_TIME);
     });
 
     it("tests implicit constructor", () => {
-        const dp = new DataPoint(TEST_VAL);
+        const dp = new Datapoint(TEST_VAL);
         expect(dp.value).toBe(TEST_VAL);
         expect(dp.timestamp).toBe(TEST_TIME);
     });
 
     it("tests explicit w/ null", () => {
-        const dp = new DataPoint(TEST_VAL, null);
+        const dp = new Datapoint(TEST_VAL, null);
         expect(dp.value).toBe(TEST_VAL);
         expect(dp.timestamp).toBe(TEST_TIME);
     });
 
     it("tests explicit w/ undefined", () => {
-        const dp = new DataPoint(TEST_VAL, undefined);
+        const dp = new Datapoint(TEST_VAL, undefined);
         expect(dp.value).toBe(TEST_VAL);
         expect(dp.timestamp).toBe(TEST_TIME);
     });
