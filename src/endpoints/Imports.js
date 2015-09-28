@@ -46,7 +46,7 @@ module.exports = {
             }
 
             const resp = Utils.getDefaultApiResp(status, webResp);
-            callback(resp.success);
+            callback(resp);
         };
         _requester.execute(req, innerCb);
     }
