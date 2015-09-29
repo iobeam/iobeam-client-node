@@ -180,6 +180,9 @@ function _Builder(projectId, projectToken) {
          * deviceSpec - An object with two fields, `deviceId` and `deviceName`,
          *              which are used if to manually specify id or name for
          *              this device.
+         * callback - Callback to run after register call, takes two params:
+         *            (1) a boolean 'success' on whether it succeeded; and
+         *            (2) if successful, a device object (undefined otherwise).
          */
         register: function(deviceSpec, callback) {
             _regArgs = {callback: callback};
