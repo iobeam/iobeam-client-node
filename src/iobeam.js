@@ -78,7 +78,7 @@ function _Client(projectId, projectToken, services, deviceId, p) {
 
         setDeviceId: function(deviceId) {
             __setDeviceId(deviceId);
-            return self;
+            return this;
         },
 
         addDataPoint: function(seriesName, point) {
@@ -176,13 +176,20 @@ function _Builder(projectId, projectToken) {
             return this;
         },
 
-        register: function(deviceId, deviceName) {
+        /*
+         * deviceSpec - An object with two fields, `deviceId` and `deviceName`,
+         *              which are used if to manually specify id or name for
+         *              this device.
+         */
+        register: function(deviceSpec) {
             _regArgs = {};
-            if (deviceId) {
-                _regArgs.deviceId = deviceId;
-            }
-            if (deviceName) {
-                _regArgs.deviceName = deviceName;
+            if (deviceSpec) {
+                if (deviceSpec.deviceId) {
+                    _regArgs.deviceId = deviceSpec.deviceId;
+                }
+                if (deviceSpec.deviceName) {
+                    _regArgs.deviceName = deviceSpec.deviceName;
+                }
             }
             return this;
         },
@@ -191,7 +198,8 @@ function _Builder(projectId, projectToken) {
             const client = _Client(
                 projectId, projectToken, services, _deviceId, _savePath);
             if (_regArgs !== null) {
-                client.register(_regArgs.deviceId, _regArgs.deviceName);
+                client.register(
+                    _regArgs.deviceId, _regArgs.deviceName);
             }
             return client;
         }

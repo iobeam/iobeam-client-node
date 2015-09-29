@@ -90,9 +90,10 @@ There are two ways to register a `device_id`:
 
     ...
 
+    var deviceSpec = {deviceId: 'my_desired_id'};
     var builder = new iobeam.Builder(PROJECT_ID, PROJECT_TOKEN)
                         .saveToDisk()
-                        .register('my_desired_id');
+                        .register(deviceSpec);
     var iobeamClient = builder.build();
 
 With the `saveToDisk()` call, the `device_id` will be saved to disk at the
