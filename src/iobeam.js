@@ -181,8 +181,8 @@ function _Builder(projectId, projectToken) {
          *              which are used if to manually specify id or name for
          *              this device.
          */
-        register: function(deviceSpec) {
-            _regArgs = {};
+        register: function(deviceSpec, callback) {
+            _regArgs = {callback: callback};
             if (deviceSpec) {
                 if (deviceSpec.deviceId) {
                     _regArgs.deviceId = deviceSpec.deviceId;
@@ -199,7 +199,7 @@ function _Builder(projectId, projectToken) {
                 projectId, projectToken, services, _deviceId, _savePath);
             if (_regArgs !== null) {
                 client.register(
-                    _regArgs.deviceId, _regArgs.deviceName);
+                    _regArgs.deviceId, _regArgs.deviceName, _regArgs.callback);
             }
             return client;
         }

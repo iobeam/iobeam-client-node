@@ -14,16 +14,16 @@ module.exports = {
 
         req.end(function(err, res) {
             if ((err && err.timeout === TIMEOUT) || (typeof(res) === "undefined")) {
-                console.log("API Response: " + key + ": TIMEOUT");
+                //console.log("API Response: " + key + ": TIMEOUT");
                 callback(RequestResults.TIMEOUT, res, context);
             } else if (res.status === 401 || res.status === 403) {
-                console.log("API Response: " + key + ": FORBIDDEN [" + res.status +"]");
+                //console.log("API Response: " + key + ": FORBIDDEN [" + res.status +"]");
                 callback(RequestResults.FORBIDDEN, res, context);
             } else if (res.status === 200 || res.status === 201 || res.status === 204) {
-                console.log("API Response: " + key + ": SUCCESS [" + res.status +"]");
+                //console.log("API Response: " + key + ": SUCCESS [" + res.status +"]");
                 callback(RequestResults.SUCCESS, res, context);
             } else {
-                console.log("API Response: " + key + ": FAILURE");
+                //console.log("API Response: " + key + ": FAILURE");
                 callback(RequestResults.FAILURE, res, context);
             }
 
