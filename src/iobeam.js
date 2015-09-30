@@ -11,7 +11,8 @@ const Imports = require("./endpoints/Imports");
 const _ID_FILENAME = "/iobeam_device_id";
 const UTF8_ENC = "utf8";
 
-function _Client(projectId, projectToken, services, deviceId, p) {
+function _Client(projectId, projectToken, services, requester,
+                 deviceId, p) {
     Utils.assertValidProjectId(projectId);
     Utils.assertValidToken(projectToken);
     Utils.assertValidRequester(Requester);
@@ -66,8 +67,8 @@ function _Client(projectId, projectToken, services, deviceId, p) {
     }
 
     /* Init code */
-    _services.devices.initialize(_token, Requester);
-    _services.imports.initialize(_token, Requester);
+    _services.devices.initialize(_token, requester);
+    _services.imports.initialize(_token, requester);
 
 
     return {
@@ -156,12 +157,19 @@ function _Builder(projectId, projectToken) {
 
     let _savePath = null;
     let _regArgs = null;
+    let _backend = Requester;
+
 
     return {
         setDeviceId: function(deviceId) {
             if (deviceId !== null && typeof(deviceId) === "string") {
                 _deviceId = deviceId;
             }
+            return this;
+        },
+
+        setBackend: function(url) {
+            _backend.initialize(url);
             return this;
         },
 
@@ -198,8 +206,8 @@ function _Builder(projectId, projectToken) {
         },
 
         build: function() {
-            const client = _Client(
-                projectId, projectToken, services, _deviceId, _savePath);
+            const client = _Client(projectId, projectToken, services, _backend,
+                                   _deviceId, _savePath);
             if (_regArgs !== null) {
                 client.register(
                     _regArgs.deviceId, _regArgs.deviceName, _regArgs.callback);

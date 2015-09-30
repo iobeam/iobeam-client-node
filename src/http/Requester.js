@@ -3,17 +3,31 @@ const request = require("superagent");
 
 const RequestResults = require("../constants/RequestResults");
 
-const TIMEOUT = 10000;
 const CONTENT_TYPE = "application/json";
-const _URL_BASE = "https://api.iobeam.com/v1";
+
+const _DEFAULT_TIMEOUT = 10000;
+const _DEFAULT_URL_BASE = "https://api.iobeam.com/v1";
+
+let _urlBase = _DEFAULT_URL_BASE;
+let _timeout = _DEFAULT_TIMEOUT;
 
 module.exports = {
+
+    initialize: function(urlBase, timeout) {
+        if (urlBase) {
+            _urlBase = urlBase;
+        }
+        if (timeout) {
+            _timeout = timeout;
+        }
+    },
+
     execute: function(req, callback, context) {
         callback(RequestResults.PENDING, null);
         const key = req.req.path;
 
         req.end(function(err, res) {
-            if ((err && err.timeout === TIMEOUT) || (typeof(res) === "undefined")) {
+            if ((err && err.timeout === _timeout) || (typeof(res) === "undefined")) {
                 //console.log("API Response: " + key + ": TIMEOUT");
                 callback(RequestResults.TIMEOUT, res, context);
             } else if (res.status === 401 || res.status === 403) {
@@ -31,13 +45,13 @@ module.exports = {
     },
 
     getFullEndpoint: function(endpoint) {
-        return _URL_BASE + endpoint;
+        return _urlBase + endpoint;
     },
 
     getRequest: function(url, token) {
         const ret = request
             .get(url)
-            .timeout(TIMEOUT);
+            .timeout(_timeout);
         if (token !== null && typeof(token) === "string") {
             const tokenStr = "Bearer " + token;
             ret.set("Authorization", tokenStr);
@@ -50,7 +64,7 @@ module.exports = {
             .post(url)
             .set("Accept", CONTENT_TYPE)
             .set("Content-Type", CONTENT_TYPE)
-            .timeout(TIMEOUT);
+            .timeout(_timeout);
 
         if (token !== null && typeof(token) === "string") {
             const tokenStr = "Bearer " + token;
