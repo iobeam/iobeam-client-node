@@ -5,7 +5,7 @@ const RequestResults = require("../constants/RequestResults");
 
 const TIMEOUT = 10000;
 const CONTENT_TYPE = "application/json";
-const _URL_BASE = "https://api-dev.iobeam.com/v1";
+const _URL_BASE = "https://api.iobeam.com/v1";
 
 module.exports = {
     execute: function(req, callback, context) {
