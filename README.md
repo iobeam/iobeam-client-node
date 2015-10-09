@@ -3,7 +3,7 @@
 **[iobeam](https://iobeam.com)** is a data platform for connected devices.
 
 This is a NodeJS library for sending data to **iobeam**.
-For more information on the iobeam, please [check our our documentation](https://docs.iobeam.com).
+For more information on the iobeam, please [check out our documentation](https://docs.iobeam.com).
 
 *Please note that we are currently invite-only. You will need an invite
 to generate a valid token and use our APIs.
