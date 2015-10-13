@@ -29,11 +29,13 @@ module.exports = {
             }
 
             const resp = Utils.getDefaultApiResp(status, webResp);
-            const body = webResp.body;
-            if (status === RequestResults.SUCCESS) {
-                resp.timestamp = body.server_timestamp;
-            } else if (status === RequestResults.FAILURE) {
-                resp.error = body.errors[0].message;
+            if (!resp.timeout) {
+                const body = webResp.body;
+                if (status === RequestResults.SUCCESS) {
+                    resp.timestamp = body.server_timestamp;
+                } else if (status === RequestResults.FAILURE) {
+                    resp.error = body.errors[0].message;
+                }
             }
             callback(resp);
         };
@@ -63,14 +65,16 @@ module.exports = {
             }
 
             const resp = Utils.getDefaultApiResp(status, webResp);
-            const body = webResp.body;
-            if (status === RequestResults.SUCCESS) {
-                resp.device = {
-                    device_id: body.device_id,
-                    device_name: body.device_name
-                };
-            } else if (status === RequestResults.FAILURE) {
-                resp.error = body.errors[0].message;
+            if (!resp.timeout) {
+                const body = webResp.body;
+                if (status === RequestResults.SUCCESS) {
+                    resp.device = {
+                        device_id: body.device_id,
+                        device_name: body.device_name
+                    };
+                } else if (status === RequestResults.FAILURE) {
+                    resp.error = body.errors[0].message;
+                }
             }
             callback(resp);
         };

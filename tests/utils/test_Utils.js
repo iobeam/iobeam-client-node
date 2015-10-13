@@ -1,6 +1,46 @@
 "use strict";
 jest.autoMockOff();
 const Utils = require("../../src/utils/Utils");
+const RequestResults = require("../../src/constants/RequestResults");
+
+describe("getDefaultApiResp", () => {
+    const cases = [
+        {
+            msg: "checks success",
+            status: RequestResults.SUCCESS,
+            webResp: {status: 200},
+            want: {success: true, timeout: false, allowed: true, code: 200}
+        },
+        {
+            msg: "checks timeout",
+            status: RequestResults.TIMEOUT,
+            webResp: undefined,
+            want: {success: false, timeout: true, allowed: true, code: 0}
+        },
+        {
+            msg: "checks forbidden",
+            status: RequestResults.FORBIDDEN,
+            webResp: {status: 403},
+            want: {success: false, timeout: false, allowed: false, code: 403}
+        },
+        {
+            msg: "checks failure",
+            status: RequestResults.FAILURE,
+            webResp: {status: 400},
+            want: {success: false, timeout: false, allowed: true, code: 400}
+        }
+    ];
+
+    cases.forEach((c) => {
+        it(c.msg, () => {
+            const resp = Utils.getDefaultApiResp(c.status, c.webResp);
+            expect(resp.success).toBe(c.want.success);
+            expect(resp.timeout).toBe(c.want.timeout);
+            expect(resp.allowed).toBe(c.want.allowed);
+            expect(resp.code).toBe(c.want.code);
+        });
+    });
+});
 
 describe("isCallback", () => {
     const f = function() { };
