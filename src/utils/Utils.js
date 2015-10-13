@@ -19,7 +19,7 @@ module.exports = {
             success: (webStatus === RequestResults.SUCCESS),
             timeout: (webStatus === RequestResults.TIMEOUT),
             allowed: (webStatus !== RequestResults.FORBIDDEN),
-            code: webResp.status,
+            code: webResp ? webResp.status : 0,
             error: null
         };
     },
