@@ -12,6 +12,7 @@ function assertValidPermissions(perms) {
     }
 }
 
+
 module.exports = {
 
     initialize: function(requester) {
@@ -21,29 +22,24 @@ module.exports = {
 
     getUserToken: function(username, password, callback) {
         const URL = _requester.getFullEndpoint("/tokens/user");
+        const context = {
+            username: username,
+            password: password
+        };
+
         const req = _requester.getRequest(URL);
         const authStr = "Basic " +
             new Buffer(username + ":" + password).toString("base64");
         req.set("Authorization", authStr);
 
-        const innerCb = (status, webResp) => {
-            if (status == RequestResults.PENDING) {
-                return;
-            } else if (!Utils.isCallback(callback)) {
-                return;
+        const bodyCb = function(resp, body, status) {
+            if (status === RequestResults.SUCCESS) {
+                resp.body = body;
+            } else if (status === RequestResults.FAILURE) {
+                resp.error = body.errors[0].message;
             }
-
-            const resp = Utils.getDefaultApiResp(status, webResp);
-            if (!resp.timeout) {
-                const body = webResp.body;
-                if (status === RequestResults.SUCCESS) {
-                    resp.body = body;
-                } else if (status === RequestResults.FAILURE) {
-                    resp.error = body.errors[0].message;
-                }
-            }
-            callback(resp);
-        }
+        };
+        const innerCb = Utils.createInnerCb(callback, context, bodyCb);
         _requester.execute(req, innerCb);
     },
 
@@ -51,6 +47,11 @@ module.exports = {
         Utils.assertValidProjectId(projectId);
         Utils.assertValidToken(userToken);
         assertValidPermissions(permissions);
+        const context = {
+            projectId: projectId,
+            permissions: permissions,
+            userToken: userToken
+        };
 
         const URL = _requester.getFullEndpoint("/tokens/project");
         const req = _requester.getRequest(URL, userToken);
@@ -62,25 +63,14 @@ module.exports = {
             .query({project_id: projectId})
             .query({include_user: false});
 
-
-        const innerCb = (status, webResp) => {
-            if (status == RequestResults.PENDING) {
-                return;
-            } else if (!Utils.isCallback(callback)) {
-                return;
+        const bodyCb = function(resp, body, status) {
+            if (status === RequestResults.SUCCESS) {
+                resp.body = body;
+            } else if (status === RequestResults.FAILURE) {
+                resp.error = body.errors[0].message;
             }
-
-            const resp = Utils.getDefaultApiResp(status, webResp);
-            if (!resp.timeout) {
-                const body = webResp.body;
-                if (status === RequestResults.SUCCESS) {
-                    resp.body = body;
-                } else if (status === RequestResults.FAILURE) {
-                    resp.error = body.errors[0].message;
-                }
-            }
-            callback(resp);
-        }
+        };
+        const innerCb = Utils.createInnerCb(callback, context, bodyCb);
         _requester.execute(req, innerCb);
     }
 

@@ -1,110 +1,20 @@
 "use strict";
 jest.autoMockOff();
 const Tokens = require("../../src/endpoints/Tokens");
+const DummyRequester = require("../http/DummyRequester");
 const RequestResults = require("../../src/constants/RequestResults");
 
-const CORRECT_USER = "test";
-const CORRECT_PASS = "correct";
-const CORRECT_PID = 1;
-const CORRECT_TOKEN = "dummytoken";
-
-const __req = {
-    url: null,
-    headers: new Map(),
-    params: {},
-    set: (key, value) => {
-        __req.headers.set(key, value);
-        return __req;
-    },
-    query: (params) => {
-        Object.assign(__req.params, params);
-        return __req;
-    },
-    reset: () => {
-        __req.url = null;
-        __req.headers = new Map();
-        __req.params = {};
-    }
-}
-
-const fakeRequester = {
-
-    _handleGetUserToken: (r, cb) => {
-        if (r.headers) {
-            const auth = r.headers.get("Authorization");
-            if (auth) {
-                const slice = auth.slice(auth.indexOf(" ") + 1);
-                const args = new Buffer(slice, "base64").toString("ascii").split(":");
-                if (args.length === 2 && args[0] === CORRECT_USER && args[1] === CORRECT_PASS) {
-                    cb(RequestResults.SUCCESS,
-                        {
-                            status: 200,
-                            body: {}
-                        }
-                    );
-                    return;
-                }
-            }
-        }
-        const errors = [{message: "invalid"}];
-        cb(RequestResults.FORBIDDEN,
-            {
-                status: 403,
-                body: {errors: errors}
-            }
-        );
-    },
-
-    _handleGetProjectToken: (r, cb) => {
-        if (r.headers) {
-            const auth = r.headers.get("Authorization");
-            const correctToken = auth === "Bearer " + CORRECT_TOKEN;
-            const correctPid = r.params.project_id === CORRECT_PID;
-            if (correctToken && correctPid) {
-                cb(RequestResults.SUCCESS,
-                    {
-                        status: 200,
-                        body: {}
-                    }
-                );
-                return;
-            }
-        }
-        const errors = [{message: "invalid"}];
-        cb(RequestResults.FORBIDDEN,
-            {
-                status: 403,
-                body: {errors: errors}
-            }
-        );
-    },
-
-    execute: (r, cb) => {
-        if (r.url === "/tokens/user") {
-            fakeRequester._handleGetUserToken(r, cb);
-        } else if (r.url === "/tokens/project") {
-            fakeRequester._handleGetProjectToken(r, cb);
-        }
-    },
-
-    getFullEndpoint: (e) => e,
-    getRequest: (url, token) => {
-        __req.url = url;
-        if (token) {
-            __req.set("Authorization", "Bearer " + token);
-        }
-        return __req;
-    },
-    postRequest: () => { ; },
-    reset: () => {
-        __req.reset();
-    }
-}
+const CORRECT_USER = DummyRequester.OK_USER;
+const CORRECT_PASS = DummyRequester.OK_PASS;
+const CORRECT_PID = DummyRequester.OK_PID;
+const CORRECT_TOKEN = DummyRequester.OK_TOKEN;
+const BAD_USER = DummyRequester.BAD_USER;
+const BAD_PASS = DummyRequester.BAD_PASS;
+const BAD_TOKEN = DummyRequester.BAD_TOKEN;
 
 describe("test user token", () => {
-    Tokens.initialize(fakeRequester);
+    Tokens.initialize(DummyRequester);
     it("good combo returns body and success", () => {
-        fakeRequester.reset();
         const cb = (resp) => {
             expect(typeof(resp)).toBe("object");
             expect(resp.timeout).toBe(false);
@@ -117,8 +27,8 @@ describe("test user token", () => {
     });
 
     const badCases = [
-        {msg: "wrong user -> 403/error", user: "WRONG", pass: CORRECT_PASS},
-        {msg: "wrong pass -> 403/error", user: CORRECT_USER, pass: "WRONG"},
+        {msg: "wrong user -> 403/error", user: BAD_USER, pass: CORRECT_PASS},
+        {msg: "wrong pass -> 403/error", user: CORRECT_USER, pass: BAD_PASS},
         {msg: "null user -> 403/error", user: null, pass: CORRECT_PASS},
         {msg: "undef user -> 403/error", user: undefined, pass: CORRECT_PASS},
         {msg: "null pass -> 403/error", user: CORRECT_USER, pass: null},
@@ -134,16 +44,14 @@ describe("test user token", () => {
     };
     badCases.forEach((c) => {
         it(c.msg, () => {
-            fakeRequester.reset();
             Tokens.getUserToken(c.user, c.pass, badCb);
         });
     });
 });
 
 describe("test project token", () => {
-    Tokens.initialize(fakeRequester);
+    Tokens.initialize(DummyRequester);
     it("good combo returns body and success", () => {
-        fakeRequester.reset();
         const cb = (resp) => {
             expect(typeof(resp)).toBe("object");
             expect(resp.timeout).toBe(false);
@@ -158,7 +66,7 @@ describe("test project token", () => {
 
     const badCases = [
         {msg: "wrong pid -> 403/error", pid: 2, token: CORRECT_TOKEN},
-        {msg: "wrong token -> 403/error", pid: CORRECT_PID, token: "WRONG"}
+        {msg: "wrong token -> 403/error", pid: CORRECT_PID, token: BAD_TOKEN}
     ];
     const badCb = (resp) => {
         expect(typeof(resp)).toBe("object");
@@ -170,7 +78,6 @@ describe("test project token", () => {
     };
     badCases.forEach((c) => {
         it(c.msg, () => {
-            fakeRequester.reset();
             const perms = {read: true};
             Tokens.getProjectToken(c.pid, perms, c.token, badCb);
         });
