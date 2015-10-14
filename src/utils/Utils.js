@@ -24,6 +24,25 @@ module.exports = {
         };
     },
 
+    createInnerCb: function(callback, context, handleBody) {
+        if (!this.isCallback(callback)) {
+            return function() {};
+        }
+
+        return function(status, webResp) {
+            if (status == RequestResults.PENDING) {
+                return;
+            }
+
+            const resp = this.getDefaultApiResp(status, webResp);
+            if (!resp.timeout) {
+                const body = webResp.body;
+                handleBody(resp, body, status);
+            }
+            callback(resp, context);
+        };
+    },
+
     isCallback: function(callback) {
         return isFunction(callback);
     },
