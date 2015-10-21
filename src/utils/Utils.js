@@ -25,7 +25,8 @@ module.exports = {
     },
 
     createInnerCb: function(callback, context, handleBody) {
-        if (!this.isCallback(callback)) {
+        const utils = this;
+        if (!utils.isCallback(callback)) {
             return function() {};
         }
 
@@ -34,7 +35,7 @@ module.exports = {
                 return;
             }
 
-            const resp = this.getDefaultApiResp(status, webResp);
+            const resp = utils.getDefaultApiResp(status, webResp);
             if (!resp.timeout) {
                 const body = webResp.body;
                 handleBody(resp, body, status);
