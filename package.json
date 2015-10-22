@@ -13,8 +13,8 @@
     "superagent": "1.4.x"
   },
   "devDependencies": {
-    "eslint": "1.5.x",
-    "jest-cli": "0.5.x",
+    "eslint": "1.7.x",
+    "jest-cli": "0.6.x",
     "mockdate": "^1.0.3"
   },
   "scripts": {
