@@ -62,6 +62,15 @@ module.exports = {
         return item !== null && typeof(item) !== "undefined";
     },
 
+    isInArray: function(needle, array) {
+        for (let i in array) {
+            if (array[i] === needle) {
+                return true;
+            }
+        }
+        return false;
+    },
+
     assertValidToken: function(token) {
         if (!isString(token)) {
             throw new ApiException("Need a valid token.");
