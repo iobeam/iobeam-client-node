@@ -25,6 +25,9 @@ const fakeImportRequester = {
 
 describe("test sending", () => {
     Imports.initialize("bad token", fakeImportRequester);
+    const PROJECT_ID = 1;
+    const DEVICE_ID = "test-device";
+
     it("returns full response, not just boolean", () => {
         const cb = (resp) => {
             expect(typeof(resp)).toBe("object");
@@ -33,7 +36,17 @@ describe("test sending", () => {
             expect(resp.code).toBe(401);
             expect(resp.success).toBe(false);
         };
-        Imports.import(1, 1, {}, cb);
+        Imports.import(PROJECT_ID, DEVICE_ID, {}, cb);
+    });
+
+    it("checks request is right", () => {
+       const cb = (resp) => {
+            const req = fakeImportRequester.getLastRequest().body;
+            expect(req.project_id).toBe(PROJECT_ID);
+            expect(req.device_id).toBe(DEVICE_ID);
+            expect(req.sources.length).toBe(0);
+        };
+        Imports.import(PROJECT_ID, DEVICE_ID, {}, cb);
     });
 });
 

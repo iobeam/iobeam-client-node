@@ -1,7 +1,4 @@
 "use strict";
-
-const RequestResults = require("../constants/RequestResults");
-
 const Utils = require("../utils/Utils");
 
 let _token = null;
@@ -19,12 +16,14 @@ module.exports = {
     import: function(projectId, deviceId, dataSet, callback) {
         Utils.assertValidToken(_token);
         Utils.assertValidProjectId(projectId);
+        Utils.assertValidDeviceId(deviceId);
         const URL = _requester.getFullEndpoint("/imports");
 
-        const reqBody = {};
-        reqBody.project_id = parseInt(projectId);
-        reqBody.device_id = deviceId;
-        reqBody.sources = [];
+        const reqBody = {
+            project_id: parseInt(projectId),
+            device_id: deviceId,
+            sources: []
+        };
 
         for (let series in dataSet) {
             if (dataSet.hasOwnProperty(series)) {
@@ -38,22 +37,14 @@ module.exports = {
         }
 
         const req = _requester.postRequest(URL, reqBody, _token);
-        const innerCb = function(status, webResp) {
-            if (status === RequestResults.PENDING) {
-                return;
-            } else if (!Utils.isCallback(callback)) {
-                return;
-            }
-
-            const resp = Utils.getDefaultApiResp(status, webResp);
-            callback(resp);
-        };
+        const innerCb = Utils.createInnerCb(callback, null, function(){});
         _requester.execute(req, innerCb);
     },
 
     importBatch: function(projectId, deviceId, batch, callback) {
         Utils.assertValidToken(_token);
         Utils.assertValidProjectId(projectId);
+        Utils.assertValidDeviceId(deviceId);
         const URL = _requester.getFullEndpoint("/imports?fmt=table");
 
         const reqBody = {

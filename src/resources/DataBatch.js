@@ -8,7 +8,6 @@ const Utils = require("../utils/Utils");
  * @param {array} fields - List of columns in this batch
  */
 function DataBatch(fields) {
-    console.log()
     if (fields === null || typeof(fields) === "undefined" ||
         fields.constructor !== Array) {
         throw new Exception("fields must be an array of strings");

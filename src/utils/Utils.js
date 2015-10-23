@@ -81,15 +81,15 @@ module.exports = {
 
     assertValidProjectId: function(projectId) {
         if (projectId === null || typeof(projectId) === "undefined") {
-            throw new ApiException("Invalid projectId: " + projectId);
+            throw new ApiException("Invalid projectId (must be int > 0): " + projectId);
         } else if (isNaN(parseInt(projectId)) || parseInt(projectId) <= 0) {
-            throw new ApiException("Invalid projectId: " + projectId);
+            throw new ApiException("Invalid projectId (must be int > 0): " + projectId);
         }
     },
 
     assertValidDeviceId: function(deviceId) {
         if (!isString(deviceId)) {
-            throw new ApiException("Invalid deviceId: " + JSON.stringify(deviceId));
+            throw new ApiException("Invalid deviceId (must be a string): " + JSON.stringify(deviceId));
         } else if (deviceId.length <= 0) {
             throw new ApiException("deviceId too short: " + deviceId.length);
         }
