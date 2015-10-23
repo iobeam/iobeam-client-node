@@ -22,6 +22,7 @@ function _Client(projectId, projectToken, services, requester,
     const _token = projectToken;
     let _deviceId = deviceId || null;
     const _dataset = {};
+    const _batches = [];
 
     // Use the disk cache if the id is there / it is provided.
     const _path = p ? path.join(p, _ID_FILENAME) : null;
@@ -92,6 +93,10 @@ function _Client(projectId, projectToken, services, requester,
                 _dataset[seriesName] = [];
             }
             _dataset[seriesName].push(point);
+        },
+
+        addDataBatch: function(dataBatch) {
+            _batches.push(dataBatch);
         },
 
         register: function(deviceId, deviceName, callback, setOnDupe) {
@@ -264,5 +269,6 @@ function _Builder(projectId, projectToken) {
 
 module.exports = {
     Builder: _Builder,
-    Datapoint: require("./resources/Datapoint")
+    Datapoint: require("./resources/Datapoint"),
+    DataBatch: require("./resources/DataBatch")
 };

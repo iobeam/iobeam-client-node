@@ -49,5 +49,40 @@ module.exports = {
             callback(resp);
         };
         _requester.execute(req, innerCb);
+    },
+
+    importBatch: function(projectId, deviceId, batch, callback) {
+        Utils.assertValidToken(_token);
+        Utils.assertValidProjectId(projectId);
+        const URL = _requester.getFullEndpoint("/imports?fmt=table");
+
+        const reqBody = {
+            project_id: parseInt(projectId),
+            device_id: deviceId
+        };
+
+        const fields = ["time"];
+        batch.fields().forEach(function(f) {
+            fields.push(f);
+        });
+
+        const rows = batch.rows();
+        const data = [];
+        rows.forEach(function(r) {
+            const temp = [];
+            fields.forEach(function(f) {
+                temp.push(r[f]);
+            });
+            data.push(temp);
+        });
+
+        reqBody.sources = {
+            fields: fields,
+            data: data
+        };
+
+        const req = _requester.postRequest(URL, reqBody, _token);
+        const innerCb = Utils.createInnerCb(callback, null, function(){});
+        _requester.execute(req, innerCb);
     }
 };
