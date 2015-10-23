@@ -147,6 +147,12 @@ function _Client(projectId, projectToken, services, requester,
     };
 }
 
+/**
+ * Builder for iobeam client object (interacts with iobeam backend).
+ * @constructor
+ * @param {int} projectId - The project this client is for
+ * @param {string} projectToken - The token to use for this project
+ */
 function _Builder(projectId, projectToken) {
     Utils.assertValidProjectId(projectId);
     Utils.assertValidToken(projectToken);
@@ -161,6 +167,10 @@ function _Builder(projectId, projectToken) {
 
 
     return {
+        /**
+         * Specify the device id for the client object.
+         * @param {string} deviceId - Desired device id (needs to be registered).
+         */
         setDeviceId: function(deviceId) {
             if (deviceId !== null && typeof(deviceId) === "string") {
                 _deviceId = deviceId;
@@ -168,11 +178,22 @@ function _Builder(projectId, projectToken) {
             return this;
         },
 
+        /**
+         * Specify the backend base URL to use for API calls
+         * @param {string} url - Base URL of API calls, meaning the final
+         * URL will be `<url><endpoint>`, e.g., for endpoint "/ping", it will
+         * be `<url>/ping`.
+         */
         setBackend: function(url) {
             _backend.initialize(url);
             return this;
         },
 
+        /**
+         * Set a disk path for saving this client's device ID.
+         * @param {string} path - File system path. If not provided, the
+         * current directory will be used.
+         */
         saveToDisk: function(path) {
             let p = path || null;
             if (p === null) {
@@ -184,13 +205,15 @@ function _Builder(projectId, projectToken) {
             return this;
         },
 
-        /*
-         * deviceSpec - An object with two fields, `deviceId` and `deviceName`,
-         *              which are used if to manually specify id or name for
-         *              this device.
-         * callback - Callback to run after register call, takes two params:
-         *            (1) a boolean 'success' on whether it succeeded; and
-         *            (2) if successful, a device object (undefined otherwise).
+        /**
+         * Register this device using the client.
+         * @param {object} deviceSpec - An object with two fields, `deviceId`
+         * and `deviceName`, which are used if to manually specify id or name
+         * for this device.
+         * @param {function} callback - Callback to run after register call,
+         * takes two params:
+         *      (1) a boolean 'success' on whether it succeeded; and
+         *      (2) if successful, a device object (undefined otherwise).
          */
         register: function(deviceSpec, callback) {
             _regArgs = {callback: callback};
@@ -205,6 +228,9 @@ function _Builder(projectId, projectToken) {
             return this;
         },
 
+        /**
+         * Builds the iobeam client specified by this builder.
+         */
         build: function() {
             const client = _Client(projectId, projectToken, services, _backend,
                                    _deviceId, _savePath);

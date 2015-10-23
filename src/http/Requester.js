@@ -13,6 +13,13 @@ let _timeout = _DEFAULT_TIMEOUT;
 
 module.exports = {
 
+    /**
+     * Setup configuration parameters of this requester object.
+     * @param {string} urlBase - Base portion of the URL endpoints for this API
+     * (default: https://api.iobeam.com/v1").
+     * @param {number} timeout - Milliseconds to wait before timing out a request
+     * (default: 10000).
+     */
     initialize: function(urlBase, timeout) {
         if (urlBase) {
             _urlBase = urlBase;
@@ -44,6 +51,10 @@ module.exports = {
         });
     },
 
+    /**
+     * Creates full URL given an endpoint suffix.
+     * @param {string} endpoint - Endpoint suffice to append to base URL.
+     */
     getFullEndpoint: function(endpoint) {
         return _urlBase + endpoint;
     },
