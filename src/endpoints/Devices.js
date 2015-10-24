@@ -34,7 +34,7 @@ module.exports = {
                 if (status === RequestResults.SUCCESS) {
                     resp.timestamp = body.server_timestamp;
                 } else if (status === RequestResults.FAILURE) {
-                    resp.error = body.errors[0].message;
+                    resp.error = body.errors[0];
                 }
             }
             callback(resp);
@@ -56,28 +56,23 @@ module.exports = {
             reqBody.device_name = dname;
         }
 
-        const req = _requester.postRequest(URL, reqBody, _token);
-        const innerCb = function(status, webResp) {
-            if (status === RequestResults.PENDING) {
-                return;
-            } else if (!Utils.isCallback(callback)) {
-                return;
-            }
-
-            const resp = Utils.getDefaultApiResp(status, webResp);
-            if (!resp.timeout) {
-                const body = webResp.body;
-                if (status === RequestResults.SUCCESS) {
-                    resp.device = {
-                        device_id: body.device_id,
-                        device_name: body.device_name
-                    };
-                } else if (status === RequestResults.FAILURE) {
-                    resp.error = body.errors[0].message;
-                }
-            }
-            callback(resp);
+        const context = {
+            projectId: projectId,
+            deviceId: deviceId,
+            deviceName: deviceName
         };
+        const req = _requester.postRequest(URL, reqBody, _token);
+        const bodyHandler = function(resp, body, status) {
+            if (status === RequestResults.SUCCESS) {
+                resp.device = {
+                    device_id: body.device_id,
+                    device_name: body.device_name
+                };
+            } else if (status === RequestResults.FAILURE) {
+                resp.error = body.errors[0];
+            }
+        };
+        const innerCb = Utils.createInnerCb(callback, context, bodyHandler);
         _requester.execute(req, innerCb);
     }
 
