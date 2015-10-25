@@ -8,6 +8,8 @@ const Utils = require("./utils/Utils");
 const Devices = require("./endpoints/Devices");
 const Imports = require("./endpoints/Imports");
 
+const DataBatch = require("./resources/DataBatch");
+
 const _ID_FILENAME = "/iobeam_device_id";
 const UTF8_ENC = "utf8";
 
@@ -65,6 +67,17 @@ function _Client(projectId, projectToken, services, requester,
             const next = _msgQueue.shift();
             next();
         }
+    }
+
+    function __convertSeriesToBatch(name, values) {
+        const batch = new DataBatch([name]);
+        for (let i in values) {
+            const pt = values[i];
+            const temp = {};
+            temp[name] = pt.value;
+            batch.add(pt.timestamp, temp);
+        }
+        return batch;
     }
 
     /* Init code */
@@ -142,21 +155,25 @@ function _Client(projectId, projectToken, services, requester,
             const cb = function(resp) {
                 if (Utils.isCallback(callback)) {
                     callback(resp.success);
-                    for (let k in _dataset) {
-                        if (_dataset.hasOwnProperty(k)) {
-                            delete _dataset[k];
-                        }
-                    }
                 }
+                _batches.shift();
 
                 _inProgress = false;
                 __startMsgQueue();
             };
 
-            _msgQueue.push(function() {
-                Utils.assertValidDeviceId(_deviceId);
-                _services.imports.import(_projectId, _deviceId, _dataset, cb);
-            });
+            for (let s in _dataset) {
+                _batches.push(__convertSeriesToBatch(s, _dataset[s]));
+                delete _dataset[s];
+            }
+
+            for (let i in _batches) {
+                const b = _batches[i];
+                _msgQueue.push(function() {
+                    Utils.assertValidDeviceId(_deviceId);
+                    _services.imports.importBatch(_projectId, _deviceId, b, cb);
+                });
+            }
             __startMsgQueue();
         }
     };
