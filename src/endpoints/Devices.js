@@ -1,7 +1,5 @@
 "use strict";
-
 const RequestResults = require("../constants/RequestResults");
-
 const Utils = require("../utils/Utils");
 
 let _token = null;
@@ -9,6 +7,12 @@ let _requester = null;
 
 module.exports = {
 
+    /**
+     * Initialize the service with a token and HTTP requester.
+     * @param {string} token - Token to use when communicating with backend
+     * @param {object} requester - A requester object that handles communicating
+     * with the backend
+     */
     initialize: function(token, requester) {
         Utils.assertValidToken(token);
         Utils.assertValidRequester(requester);
@@ -42,6 +46,15 @@ module.exports = {
         _requester.execute(req, innerCb);
     },
 
+    /**
+     * Register the device with the iobeam.
+     * @param {integer} projectId - Project ID for the device
+     * @param {function} callback - Callback for the API response
+     * @param {string} deviceId - Optional, desired device ID (otherwise
+     * randomly generated)
+     * @param {string} deviceName - Optional, desired device name (otherwise
+     * randomly generated)
+     */
     register: function(projectId, callback, deviceId, deviceName) {
         Utils.assertValidToken(_token);
         const URL = _requester.getFullEndpoint("/devices");

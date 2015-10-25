@@ -224,6 +224,8 @@ function _Builder(projectId, projectToken) {
          * takes two params:
          *      (1) a boolean 'success' on whether it succeeded; and
          *      (2) if successful, a device object (undefined otherwise).
+         * @param {boolean} setOnDupe - Sets client deviceId if register call
+         * fails with duplicate error message
          */
         register: function(deviceSpec, callback, setOnDupe) {
             _regArgs = {
