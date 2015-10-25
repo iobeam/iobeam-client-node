@@ -44,6 +44,16 @@ module.exports = {
         };
     },
 
+    statusCodeToResult: function(status) {
+        if (status === 401 || status === 403) {
+            return RequestResults.FORBIDDEN;
+        } else if (status === 200 || status === 201 || status === 204) {
+            return RequestResults.SUCCESS;
+        } else {
+            return RequestResults.FAILURE;
+        }
+    },
+
     isCallback: function(callback) {
         return isFunction(callback);
     },

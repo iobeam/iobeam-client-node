@@ -82,6 +82,10 @@ function _Client(projectId, projectToken, services, requester,
             return this;
         },
 
+        getDeviceId: function() {
+            return _deviceId;
+        },
+
         addDataPoint: function(seriesName, point) {
             Utils.assertValidDataPoint(point);
             if (!_dataset.hasOwnProperty(seriesName)) {
@@ -90,8 +94,9 @@ function _Client(projectId, projectToken, services, requester,
             _dataset[seriesName].push(point);
         },
 
-        register: function(deviceId, deviceName, callback) {
+        register: function(deviceId, deviceName, callback, setOnDupe) {
             deviceId = deviceId || null;
+            setOnDupe = setOnDupe || false;
             if (!__hasService("devices")) {
                 return; // TODO throw exception
             } else if (_deviceId !== null && deviceId === _deviceId) {
@@ -103,6 +108,11 @@ function _Client(projectId, projectToken, services, requester,
             const cb = function(deviceResp) {
                 if (deviceResp.success) {
                     __setDeviceId(deviceResp.device.device_id);
+                } else if (setOnDupe && deviceResp.error.code === 150) {
+                    __setDeviceId(deviceId);
+                    deviceResp.success = true;
+                    deviceResp.device = {device_id: deviceId};
+                    // TODO what about device name?
                 }
 
                 if (Utils.isCallback(callback)) {
@@ -215,8 +225,11 @@ function _Builder(projectId, projectToken) {
          *      (1) a boolean 'success' on whether it succeeded; and
          *      (2) if successful, a device object (undefined otherwise).
          */
-        register: function(deviceSpec, callback) {
-            _regArgs = {callback: callback};
+        register: function(deviceSpec, callback, setOnDupe) {
+            _regArgs = {
+                callback: callback,
+                setOnDupe: (setOnDupe || false)
+            };
             if (deviceSpec) {
                 if (deviceSpec.deviceId) {
                     _regArgs.deviceId = deviceSpec.deviceId;
@@ -235,8 +248,8 @@ function _Builder(projectId, projectToken) {
             const client = _Client(projectId, projectToken, services, _backend,
                                    _deviceId, _savePath);
             if (_regArgs !== null) {
-                client.register(
-                    _regArgs.deviceId, _regArgs.deviceName, _regArgs.callback);
+                client.register(_regArgs.deviceId, _regArgs.deviceName,
+                                _regArgs.callback, _regArgs.setOnDupe);
             }
             return client;
         }
