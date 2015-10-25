@@ -243,6 +243,10 @@ function _Builder(projectId, projectToken) {
             return this;
         },
 
+        registerOrSetId: function(deviceId, callback) {
+            return this.register({deviceId: deviceId}, callback, true);
+        },
+
         /**
          * Builds the iobeam client specified by this builder.
          */
