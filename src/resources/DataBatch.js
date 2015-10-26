@@ -30,6 +30,10 @@ function DataBatch(fields) {
          * set to null.
          */
         add: function(time, data) {
+            if (this.size() + fields.length > 500) {
+                throw new Exception("batches are limited to 500 data points");
+            }
+
             if (data === null || typeof(data) === "undefined") {
                 throw new Exception("data cannot be null/undefined");
             }
@@ -57,6 +61,11 @@ function DataBatch(fields) {
         /* Return the list of rows in this batch */
         rows: function() {
             return _rows;
+        },
+
+        /* Return the table size (rows * fields) of this batch */
+        size: function() {
+            return _fields.length * _rows.length;
         }
     };
 }
