@@ -2,6 +2,7 @@
 const request = require("superagent");
 
 const RequestResults = require("../constants/RequestResults");
+const Utils = require("../utils/Utils");
 
 const CONTENT_TYPE = "application/json";
 
@@ -30,24 +31,19 @@ module.exports = {
     },
 
     execute: function(req, callback, context) {
-        callback(RequestResults.PENDING, null);
-        const key = req.req.path;
+        callback(RequestResults.PENDING, null, null);
+        //const key = req.req.path;
 
         req.end(function(err, res) {
-            if ((err && err.timeout === _timeout) || (typeof(res) === "undefined")) {
-                //console.log("API Response: " + key + ": TIMEOUT");
-                callback(RequestResults.TIMEOUT, res, context);
-            } else if (res.status === 401 || res.status === 403) {
-                //console.log("API Response: " + key + ": FORBIDDEN [" + res.status +"]");
-                callback(RequestResults.FORBIDDEN, res, context);
-            } else if (res.status === 200 || res.status === 201 || res.status === 204) {
-                //console.log("API Response: " + key + ": SUCCESS [" + res.status +"]");
-                callback(RequestResults.SUCCESS, res, context);
+            let result = null;
+            if ((err && err.timeout === _timeout) || typeof(res) === "undefined") {
+                result = RequestResults.TIMEOUT;
             } else {
-                //console.log("API Response: " + key + ": FAILURE");
-                callback(RequestResults.FAILURE, res, context);
+                result = Utils.statusCodeToResult(res.status);
             }
-
+            //console.log("API Response: " + key + ": " + result + " [" +
+            //            res.status +"]");
+            callback(result, res, context);
         });
     },
 
