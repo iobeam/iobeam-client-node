@@ -153,9 +153,10 @@ point under that series:
 
     iobeamClient.addDataPoint("temperature", d)
 
-Note that `iobeamClient` can hold several series at once. For
-example, if you also had a `getHumidity()` function, you could add both
-data points to the same `iobeam.Iobeam`:
+### Tracking Multiple Series
+
+Some applications will want to track multiple data series. The `iobeamClient`
+object can contain multiple series using the previous method:
 
     var now = Date.now();
     var dt = new iobeam.Datapoint(getTemperature(), now);
@@ -164,6 +165,20 @@ data points to the same `iobeam.Iobeam`:
     iobeamClient.addDataPoint("temperature", dt)
     iobeamClient.addDataPoint("humidity", dh)
 
+This method is most useful if the series are on different duty cycles, e.g.,
+one series is measured every 1s and the other is measured every 10s. If you
+have multiple values being measured at the same interval, you could instead
+use a `DataBatch`:
+
+    var now = Date.now();
+    var batch = new iobeam.DataBatch(["temperature", "humidity"]);
+    batch.add(now, {temperature: getTemperature(), humidity: getHumidity()});
+    iobeamClient.addDataBatch(batch);
+
+You create the batch with an array of series -- in this case `temperature` and
+`humidity` -- and then add rows with a timestamp and object containing the
+data values, keyed by the field. You can exclude fields in some rows, but
+if you find this happens more often than not, the first method is preferred.
 
 ### Connecting to the iobeam backend
 
@@ -197,13 +212,11 @@ Here's the full source code for our example:
 
     // Data gathering
     var now = Date.now();
-    var dt = new iobeam.Datapoint(getTemperature(), now);
-    var dh = new iobeam.Datapoint(getHumidity(), now);
-
-    iobeamClient.addDataPoint("temperature", dt);
-    iobeamClient.addDataPoint("humidity", dh);
+    var batch = new iobeam.DataBatch(["temperature", "humidity"]);
+    batch.add(now, {temperature: getTemperature(), humidity: getHumidity()});
 
     ...
 
     // Data transmission
+    iobeamClient.addDataBatch(batch);
     iobeamClient.send();
