@@ -105,3 +105,23 @@ describe("adding to batches", () => {
         check(undefined);
     });
 });
+
+describe("adding too many to batch", () => {
+    const batch = new DataBatch(FIELDS);
+
+    it("tests size function", () => {
+        for (let i = 0; i < 166; i++) {
+            batch.add(i, {foo: i, bar: i, baz: i});
+            expect(batch.size()).toBe((i + 1) * 3);
+        }
+    });
+
+    it("tests than > 500 fails", () => {
+        try {
+            batch.add(167, {foo: 167});
+            expect(false).toBe(true);
+        } catch (Exception) {
+            expect(batch.size()).toBe(498);
+        }
+    });
+});
