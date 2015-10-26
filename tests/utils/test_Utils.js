@@ -76,6 +76,23 @@ describe("isSet", () => {
 });
 
 
+describe("isInArray", () => {
+    const FIELDS = ["foo", "bar", "baz"];
+    const f = (needle) => Utils.isInArray(needle, FIELDS);
+    it("tests success", () => {
+        expect(f("foo")).toBe(true);
+        expect(f("bar")).toBe(true);
+        expect(f("baz")).toBe(true);
+    });
+
+    it("tests failure", () => {
+        expect(f("huh")).toBe(false);
+        expect(f(null)).toBe(false);
+        expect(f(undefined)).toBe(false);
+    });
+});
+
+
 describe("assertValidToken", () => {
     const cases = [
         {msg: "checks null is invalid", arg: null, res: false},

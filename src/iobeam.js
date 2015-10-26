@@ -8,6 +8,8 @@ const Utils = require("./utils/Utils");
 const Devices = require("./endpoints/Devices");
 const Imports = require("./endpoints/Imports");
 
+const DataBatch = require("./resources/DataBatch");
+
 const _ID_FILENAME = "/iobeam_device_id";
 const UTF8_ENC = "utf8";
 
@@ -22,6 +24,7 @@ function _Client(projectId, projectToken, services, requester,
     const _token = projectToken;
     let _deviceId = deviceId || null;
     const _dataset = {};
+    const _batches = [];
 
     // Use the disk cache if the id is there / it is provided.
     const _path = p ? path.join(p, _ID_FILENAME) : null;
@@ -66,6 +69,17 @@ function _Client(projectId, projectToken, services, requester,
         }
     }
 
+    function __convertSeriesToBatch(name, values) {
+        const batch = new DataBatch([name]);
+        for (let i in values) {
+            const pt = values[i];
+            const temp = {};
+            temp[name] = pt.value;
+            batch.add(pt.timestamp, temp);
+        }
+        return batch;
+    }
+
     /* Init code */
     _services.devices.initialize(_token, requester);
     _services.imports.initialize(_token, requester);
@@ -92,6 +106,10 @@ function _Client(projectId, projectToken, services, requester,
                 _dataset[seriesName] = [];
             }
             _dataset[seriesName].push(point);
+        },
+
+        addDataBatch: function(dataBatch) {
+            _batches.push(dataBatch);
         },
 
         register: function(deviceId, deviceName, callback, setOnDupe) {
@@ -137,21 +155,25 @@ function _Client(projectId, projectToken, services, requester,
             const cb = function(resp) {
                 if (Utils.isCallback(callback)) {
                     callback(resp.success);
-                    for (let k in _dataset) {
-                        if (_dataset.hasOwnProperty(k)) {
-                            delete _dataset[k];
-                        }
-                    }
                 }
+                _batches.shift();
 
                 _inProgress = false;
                 __startMsgQueue();
             };
 
-            _msgQueue.push(function() {
-                Utils.assertValidDeviceId(_deviceId);
-                _services.imports.import(_projectId, _deviceId, _dataset, cb);
-            });
+            for (let s in _dataset) {
+                _batches.push(__convertSeriesToBatch(s, _dataset[s]));
+                delete _dataset[s];
+            }
+
+            for (let i in _batches) {
+                const b = _batches[i];
+                _msgQueue.push(function() {
+                    Utils.assertValidDeviceId(_deviceId);
+                    _services.imports.importBatch(_projectId, _deviceId, b, cb);
+                });
+            }
             __startMsgQueue();
         }
     };
@@ -264,5 +286,6 @@ function _Builder(projectId, projectToken) {
 
 module.exports = {
     Builder: _Builder,
-    Datapoint: require("./resources/Datapoint")
+    Datapoint: require("./resources/Datapoint"),
+    DataBatch: require("./resources/DataBatch")
 };
