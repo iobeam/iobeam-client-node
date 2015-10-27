@@ -6,6 +6,7 @@ const Utils = require("../utils/Utils");
  * Represents a data batch, i.e., rows of data points.
  * @constructor
  * @param {array} fields - List of columns in this batch
+ * @returns {object} Object representing a batch of data in table format.
  */
 function DataBatch(fields) {
     if (fields === null || typeof(fields) === "undefined" ||

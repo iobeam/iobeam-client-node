@@ -89,7 +89,8 @@ module.exports = {
 
     assertValidDeviceId: function(deviceId) {
         if (!isString(deviceId)) {
-            throw new ApiException("Invalid deviceId (must be a string): " + JSON.stringify(deviceId));
+            throw new ApiException("Invalid deviceId (must be a string): " +
+                JSON.stringify(deviceId));
         } else if (deviceId.length <= 0) {
             throw new ApiException("deviceId too short: " + deviceId.length);
         }

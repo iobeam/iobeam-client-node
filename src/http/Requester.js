@@ -30,6 +30,12 @@ module.exports = {
         }
     },
 
+    /**
+     * Execute a superagent HTTP request.
+     * @param {object} req - superagent request
+     * @param {function} callback - Function to call after the request with status
+     * @param {object} context - Related information about this call to pass to callback
+     */
     execute: function(req, callback, context) {
         callback(RequestResults.PENDING, null, null);
         //const key = req.req.path;
@@ -50,11 +56,18 @@ module.exports = {
     /**
      * Creates full URL given an endpoint suffix.
      * @param {string} endpoint - Endpoint suffice to append to base URL.
+     * @returns {string} Full URL of an API endpoint
      */
     getFullEndpoint: function(endpoint) {
         return _urlBase + endpoint;
     },
 
+    /**
+     * Create a GET superagent request for a given url and (optionally) token.
+     * @param {string} url - URL of the request
+     * @param {string} token - Token to use as a Bearer auth token
+     * @returns {object} superagent GET request aimed at url
+     */
     getRequest: function(url, token) {
         const ret = request
             .get(url)
@@ -66,6 +79,13 @@ module.exports = {
         return ret;
     },
 
+    /**
+     * Create a POST superagent request for a given url, body, and (optionally) token.
+     * @param {string} url - URL of the request
+     * @param {object} body - JSON formatted body for the request
+     * @param {string} token - Token to use as a Bearer auth token
+     * @returns {object} superagent POST request aimed at url
+     */
     postRequest: function(url, body, token) {
         const ret = request
             .post(url)

@@ -87,15 +87,21 @@ function _Client(projectId, projectToken, services, requester,
 
     return {
 
-        dataset: function() {
+        /*dataset: function() {
             return _dataset;
-        },
+        },*/
 
+        /**
+         * Set the device id for this client.
+         * @param {string} deviceId - Device Id to use
+         * @returns (object) This client object
+         */
         setDeviceId: function(deviceId) {
             __setDeviceId(deviceId);
             return this;
         },
 
+        /** Get the device id for this client. */
         getDeviceId: function() {
             return _deviceId;
         },
@@ -108,10 +114,22 @@ function _Client(projectId, projectToken, services, requester,
             _dataset[seriesName].push(point);
         },
 
+        /**
+         * Add a DataBatch to be sent.
+         * @param {DataBatch} dataBatch - Batch of data o be sent.
+         */
         addDataBatch: function(dataBatch) {
             _batches.push(dataBatch);
         },
 
+        /**
+         * Register this client with a device
+         * @param {string} deviceId - Optional, desired device Id
+         * @param {string} deviceName - Optional, desired device name
+         * @param {function} callback - Optional, function to call with response
+         * @param {bool} setOnDupe - If true, will set this client to use the deviceId
+         * if it already exists.
+         */
         register: function(deviceId, deviceName, callback, setOnDupe) {
             deviceId = deviceId || null;
             setOnDupe = setOnDupe || false;
@@ -147,6 +165,10 @@ function _Client(projectId, projectToken, services, requester,
             __startMsgQueue();
         },
 
+        /**
+         * Send data stored in the client.
+         * @param {function} callback - Function to call with response
+         */
         send: function(callback) {
             if (!__hasService("imports")) {
                 return; // TODO throw exception
