@@ -15,9 +15,14 @@ function registerDevice(deviceId, deviceName) {
     return {status: 200, body: {device_id: deviceId, device_name: deviceName}};
 }
 
+function modQuery(params) {
+    // TODO: Modify the url.
+}
+
 const DummyRequester = {
     OK_TOKEN: "dummytoken",
     BAD_TOKEN: "badtoken",
+    BASE_URL: "dummy/v1",
 
     execute: (r, cb) => {
         if (r.token !== DummyRequester.OK_TOKEN) {
@@ -25,6 +30,8 @@ const DummyRequester = {
         } else if (r.url === "dummy/v1/devices") {
             const ret = registerDevice(r.body.device_id, r.body.device_name);
             cb(Utils.statusCodeToResult(ret.status), ret);
+        } else if (r.url.startsWith(this.BASE_URL + "/exports")) {
+            cb(RequestResults.SUCCESS, {status: 200});
         } else {
             // TODO: update
             cb(RequestResults.FORBIDDEN, {status: 403});
@@ -36,15 +43,18 @@ const DummyRequester = {
     getRequest: (url, token) => {
         _lastReq = {
             url: url,
-            token: (token || null)
+            token: (token || null),
+            query: modQuery
         };
+        return _lastReq;
     },
 
     postRequest: (url, body, token) => {
         _lastReq = {
             url: url,
             body: body,
-            token: (token || null)
+            token: (token || null),
+            query: modQuery
         };
         return _lastReq;
     },
