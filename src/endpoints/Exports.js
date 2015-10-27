@@ -14,11 +14,12 @@ module.exports = {
         _requester = requester;
     },
 
-    query: function(projectId, deviceId, seriesName, options, callback) {
+    query: function(projectId, deviceId, seriesName, callback, options) {
         Utils.assertValidToken(_token);
         Utils.assertValidProjectId(projectId);
         const did = deviceId || "all";
         const sname = seriesName || "all";
+        const opts = options || {};
         if (did != "all") {
             Utils.assertValidDeviceId(did);
         }
@@ -28,11 +29,10 @@ module.exports = {
             projectId: projectId,
             deviceId: deviceId,
             seriesName: seriesName,
-            options: options
+            options: opts
         };
 
         const req = _requester.getRequest(URL, _token);
-        const opts = options || {};
         if (opts.limit) {
             req.query({limit: opts.limit});
         }
