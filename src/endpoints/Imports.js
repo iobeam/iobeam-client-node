@@ -1,4 +1,5 @@
 "use strict";
+const RequestResults = require("../constants/RequestResults");
 const Utils = require("../utils/Utils");
 
 let _token = null;
@@ -65,7 +66,15 @@ module.exports = {
         Utils.assertValidToken(_token);
         Utils.assertValidProjectId(projectId);
         Utils.assertValidDeviceId(deviceId);
+        if (batch.rows().length === 0) {
+            if (Utils.isCallback(callback)) {
+                const resp = Utils.getDefaultApiResp(RequestResults.SUCCESS, {status: 200});
+                callback(resp);
+            }
+            return;
+        }
         const URL = _requester.getFullEndpoint("/imports?fmt=table");
+
 
         const reqBody = {
             project_id: parseInt(projectId),

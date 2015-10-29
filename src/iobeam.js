@@ -191,6 +191,10 @@ function _Client(projectId, projectToken, services, requester,
 
             for (let i in _batches) {
                 const b = _batches[i];
+                if (b.rows().length === 0) {
+                    callback(true);
+                    continue;
+                }
                 _msgQueue.push(function() {
                     Utils.assertValidDeviceId(_deviceId);
                     _services.imports.importBatch(_projectId, _deviceId, b, cb);

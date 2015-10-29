@@ -20,7 +20,8 @@ const fakeImportRequester = {
             token: token
         }
         return req
-    }
+    },
+    reset: () => { req = null; }
 }
 
 describe("test sending", () => {
@@ -56,11 +57,23 @@ describe("test batch send", () => {
     const DEVICE_ID = "test-device";
     const FIELDS = ["foo", "bar"];
 
+    it("checks empty request is true", () => {
+        const batch = new DataBatch(FIELDS);
+        fakeImportRequester.reset();
+        const cb = (resp) => {
+            const req = fakeImportRequester.getLastRequest();
+            expect(req).toBeNull();
+            expect(resp.success).toBe(true);
+        }
+        Imports.importBatch(PROJECT_ID, DEVICE_ID, batch, cb);
+    });
+
     it("checks request is right", () => {
         const batch = new DataBatch(FIELDS);
         batch.add(0, {foo: 1.0, bar: 2.0});
         batch.add(10, {foo: 3.0, bar: 4.0});
         batch.add(20, {foo: 5.0});
+        fakeImportRequester.reset();
 
         const cb = (resp) => {
             const req = fakeImportRequester.getLastRequest().body;
