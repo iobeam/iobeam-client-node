@@ -14,7 +14,7 @@
   },
   "devDependencies": {
     "eslint": "1.7.x",
-    "jest-cli": "0.6.x",
+    "jest-cli": "0.x.x",
     "mockdate": "^1.0.3"
   },
   "scripts": {

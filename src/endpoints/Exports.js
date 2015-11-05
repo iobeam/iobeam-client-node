@@ -42,6 +42,9 @@ module.exports = {
         if (opts.to) {
             req.query({to: opts.to});
         }
+        if (opts.output === "csv" || opts.output === "json") {
+            req.query({output: opts.output})
+        }
         const bodyHandler = function(resp, body, status) {
             if (status == RequestResults.SUCCESS) {
                 resp.body = body;
