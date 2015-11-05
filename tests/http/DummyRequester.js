@@ -9,10 +9,10 @@ const _deviceIds = new Set();
 function registerDevice(deviceId, deviceName) {
     if (_deviceIds.has(deviceId)) {
         const err = {message: "no dupe id", code: 150};
-        return {status: 422, body: {errors: [err]}}
+        return {status: 422, type: "application/json", body: {errors: [err]}}
     }
     _deviceIds.add(deviceId);
-    return {status: 200, body: {device_id: deviceId, device_name: deviceName}};
+    return {status: 200, type: "application/json", body: {device_id: deviceId, device_name: deviceName}};
 }
 
 function modQuery(params) {
@@ -26,15 +26,15 @@ const DummyRequester = {
 
     execute: (r, cb) => {
         if (r.token !== DummyRequester.OK_TOKEN) {
-            cb(RequestResults.FORBIDDEN, {status: 403});
+            cb(RequestResults.FORBIDDEN, {status: 403, type: "application/json"});
         } else if (r.url === "dummy/v1/devices") {
             const ret = registerDevice(r.body.device_id, r.body.device_name);
             cb(Utils.statusCodeToResult(ret.status), ret);
         } else if (r.url.startsWith(this.BASE_URL + "/exports")) {
-            cb(RequestResults.SUCCESS, {status: 200});
+            cb(RequestResults.SUCCESS, {status: 200, type: "application/json"});
         } else {
             // TODO: update
-            cb(RequestResults.FORBIDDEN, {status: 403});
+            cb(RequestResults.FORBIDDEN, {status: 403, type: "application/json"});
         }
     },
 
