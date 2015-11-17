@@ -34,6 +34,15 @@ Then to include in a project:
 
     var iobeam = require('iobeam-client');
 
+By default, an installation script attempts to decide if Babel should be used
+(i.e. for Node versions older than 4.0.0). If you would like to force Babel
+to be used even with newer versions of Node (e.g. when using as part of a 
+web app), add the following to your `package.json`:
+
+    "iobeam": {
+        "babel": true
+    }
+
 ## Overview
 
 This library allows NodeJS clients to send data to the
