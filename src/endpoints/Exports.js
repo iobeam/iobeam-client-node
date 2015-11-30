@@ -43,7 +43,7 @@ module.exports = {
             req.query({to: opts.to});
         }
         if (opts.output === "csv" || opts.output === "json") {
-            req.query({output: opts.output})
+            req.query({output: opts.output});
         }
         const bodyHandler = function(resp, body, status) {
             if (status == RequestResults.SUCCESS) {

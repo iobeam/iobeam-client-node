@@ -1,5 +1,7 @@
 "use strict";
 jest.autoMockOff();
+const MockDate = require("mockdate");
+
 const Utils = require("../../src/utils/Utils");
 const RequestResults = require("../../src/constants/RequestResults");
 
@@ -90,6 +92,23 @@ describe("isInArray", () => {
         expect(f(null)).toBe(false);
         expect(f(undefined)).toBe(false);
     });
+});
+
+
+describe("isExpiredToken", () => {
+    const TOKEN = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiIsImtpZCI6MTB9.eyJ1aWQiOjAsInBpZCI6MzIsImV4cCI6MTQ0OTIzNDY2MCwicG1zIjo3fQ==.notlegitsignature=";
+    const f = () => Utils.isExpiredToken(TOKEN);
+    it("tests non-expired", () => {
+        expect(f()).toBe(false);
+    });
+    it("tests exact expired", () => {
+        MockDate.set(1449234660000);
+        expect(f()).toBe(true);
+    });
+    it("tests after is expired", () => {
+        MockDate.set(1449234660001);
+        expect(f()).toBe(true);
+    })
 });
 
 
