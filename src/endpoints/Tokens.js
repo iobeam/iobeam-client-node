@@ -72,6 +72,27 @@ module.exports = {
         };
         const innerCb = Utils.createInnerCb(callback, context, bodyCb);
         _requester.execute(req, innerCb);
+    },
+
+    refreshProjectToken: function(projectToken, callback) {
+        Utils.assertValidToken(projectToken);
+        const context = {
+            projectToken: projectToken
+        };
+
+        const URL = _requester.getFullEndpoint("/tokens/project");
+        const reqBody = {refresh_token: projectToken};
+        const req = _requester.postRequest(URL, reqBody);
+
+        const bodyHandler = function(resp, body, status) {
+            if (status == RequestResults.SUCCESS) {
+                resp.body = body;
+            } else if (status === RequestResults.FAILURE) {
+                resp.error = body.errors[0].message;
+            }
+        };
+        const innerCb = Utils.createInnerCb(callback, context, bodyHandler);
+        _requester.execute(req, innerCb);
     }
 
 };

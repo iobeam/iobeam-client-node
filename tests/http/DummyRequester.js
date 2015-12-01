@@ -12,6 +12,7 @@ const _lastReq = {
     url: null,
     headers: new Map(),
     params: {},
+    method: null,
     set: (key, value) => {
         _lastReq.headers.set(key, value);
         return _lastReq;
@@ -65,6 +66,21 @@ function getProjectToken(req) {
     return {status: 403, type: "application/json", body: {errors: errors}};
 }
 
+function refreshProjectToken(token) {
+    if (token === CORRECT_TOKEN) {
+        return {status: 200, type: "application/json", body: {
+            token: "refreshtoken",
+            expires: "a date",
+            project_id: CORRECT_PID,
+            read: true,
+            write: true,
+            admin: false
+        }};
+    }
+    const errors = [{message: "invalid"}];
+    return {status: 403, type: "application/json", body: {errors: errors}};
+}
+
 function modQuery(params) {
     // TODO: Modify the url.
 }
@@ -84,7 +100,12 @@ const DummyRequester = {
             const ret = getUserToken(r);
             cb(Utils.statusCodeToResult(ret.status), ret);
         } else if (r.url === "dummy/v1/tokens/project") {
-            const ret = getProjectToken(r);
+            let ret;
+            if (r.method === "GET") {
+                ret = getProjectToken(r);
+            } else if (r.method === "POST") {
+                ret = refreshProjectToken(r.body.refresh_token);
+            }
             cb(Utils.statusCodeToResult(ret.status), ret);
         } else if (r.token !== DummyRequester.OK_TOKEN) {
             cb(RequestResults.FORBIDDEN, {status: 403, type: "application/json"});
@@ -104,6 +125,7 @@ const DummyRequester = {
     getRequest: (url, token) => {
         _lastReq.reset();
         _lastReq.url = url;
+        _lastReq.method = "GET";
         _lastReq.token = (token || null);
         if (token) {
             _lastReq.set("Authorization", "Bearer " + token);
@@ -114,6 +136,7 @@ const DummyRequester = {
     postRequest: (url, body, token) => {
         _lastReq.reset();
         _lastReq.url = url;
+        _lastReq.method = "POST";
         _lastReq.body = body;
         _lastReq.token = (token || null);
         if (token) {

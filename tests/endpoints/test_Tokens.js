@@ -2,7 +2,6 @@
 jest.autoMockOff();
 const Tokens = require("../../src/endpoints/Tokens");
 const DummyRequester = require("../http/DummyRequester");
-const RequestResults = require("../../src/constants/RequestResults");
 
 const CORRECT_USER = DummyRequester.OK_USER;
 const CORRECT_PASS = DummyRequester.OK_PASS;
@@ -81,5 +80,20 @@ describe("test project token", () => {
             const perms = {read: true};
             Tokens.getProjectToken(c.pid, perms, c.token, badCb);
         });
+    });
+});
+
+describe("test refresh project token", () => {
+    Tokens.initialize(DummyRequester);
+    it("good combo returns body and success", () => {
+        const cb = (resp) => {
+            expect(typeof(resp)).toBe("object");
+            expect(resp.timeout).toBe(false);
+            expect(resp.allowed).toBe(true);
+            expect(resp.code).toBe(200);
+            expect(resp.success).toBe(true);
+            expect(typeof(resp.body)).toBe("object");
+        };
+        Tokens.refreshProjectToken(CORRECT_TOKEN, cb);
     });
 });
