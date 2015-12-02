@@ -144,7 +144,7 @@ function _Client(projectId, projectToken, services, requester,
             const cb = function(deviceResp) {
                 if (deviceResp.success) {
                     __setDeviceId(deviceResp.device.device_id);
-                } else if (setOnDupe && deviceResp.error.code === 150) {
+                } else if (setOnDupe && deviceResp.error && deviceResp.error.code === 150) {
                     __setDeviceId(deviceId);
                     deviceResp.success = true;
                     deviceResp.device = {device_id: deviceId};

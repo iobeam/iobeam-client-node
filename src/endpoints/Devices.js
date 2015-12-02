@@ -38,7 +38,9 @@ module.exports = {
                 if (status === RequestResults.SUCCESS) {
                     resp.timestamp = body.server_timestamp;
                 } else if (status === RequestResults.FAILURE) {
-                    resp.error = body.errors[0];
+                    if (body && body.errors) {
+                        resp.error = body.errors[0];
+                    }
                 }
             }
             callback(resp);
@@ -82,7 +84,9 @@ module.exports = {
                     device_name: body.device_name
                 };
             } else if (status === RequestResults.FAILURE) {
-                resp.error = body.errors[0];
+                if (body && body.errors) {
+                    resp.error = body.errors[0];
+                }
             }
         };
         const innerCb = Utils.createInnerCb(callback, context, bodyHandler);
