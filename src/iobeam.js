@@ -7,6 +7,7 @@ const Utils = require("./utils/Utils");
 
 const Devices = require("./endpoints/Devices");
 const Imports = require("./endpoints/Imports");
+const Tokens = require("./endpoints/Tokens");
 
 const DataBatch = require("./resources/DataBatch");
 
@@ -21,7 +22,7 @@ function _Client(projectId, projectToken, services, requester,
 
     /* Private vars */
     const _projectId = projectId;
-    const _token = projectToken;
+    let _token = projectToken;
     let _deviceId = deviceId || null;
     const _dataset = {};
     const _batches = [];
@@ -80,11 +81,32 @@ function _Client(projectId, projectToken, services, requester,
         return batch;
     }
 
-    /* Init code */
-    _services.devices.initialize(_token, requester);
-    _services.imports.initialize(_token, requester);
+    function __setNewToken(resp) {
+        if (resp.success) {
+            _token = resp.body.token;
+            __initServices();
+        }
 
+        // Let the message queue progress
+        _inProgress = false;
+        __startMsgQueue();
+    }
 
+    function __checkToken() {
+        if (Utils.isExpiredToken(_token)) {
+            _msgQueue.push(function() {
+                _services.tokens.refreshProjectToken(_token, __setNewToken);
+            });
+        }
+    }
+
+    function __initServices() {
+        _services.devices.initialize(_token, requester);
+        _services.imports.initialize(_token, requester);
+        _services.tokens.initialize(requester);
+    }
+
+    __initServices();
     return {
 
         /*dataset: function() {
@@ -159,6 +181,8 @@ function _Client(projectId, projectToken, services, requester,
                 _inProgress = false;
                 __startMsgQueue();
             };
+
+            __checkToken();
             _msgQueue.push(function() {
                 _services.devices.register(_projectId, cb, deviceId, deviceName);
             });
@@ -189,6 +213,7 @@ function _Client(projectId, projectToken, services, requester,
                 delete _dataset[s];
             }
 
+            __checkToken();
             for (let i in _batches) {
                 const b = _batches[i];
                 if (b.rows().length === 0) {
@@ -216,7 +241,7 @@ function _Builder(projectId, projectToken) {
     Utils.assertValidToken(projectToken);
     Utils.assertValidRequester(Requester);
 
-    const services = {devices: Devices, imports: Imports};
+    const services = {devices: Devices, imports: Imports, tokens: Tokens};
     let _deviceId = null;
 
     let _savePath = null;
