@@ -99,6 +99,7 @@ describe("isExpiredToken", () => {
     const TOKEN = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiIsImtpZCI6MTB9.eyJ1aWQiOjAsInBpZCI6MzIsImV4cCI6MTQ0OTIzNDY2MCwicG1zIjo3fQ==.notlegitsignature=";
     const f = () => Utils.isExpiredToken(TOKEN);
     it("tests non-expired", () => {
+        MockDate.set(1449234659999);
         expect(f()).toBe(false);
     });
     it("tests exact expired", () => {
