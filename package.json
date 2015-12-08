@@ -6,13 +6,13 @@
   "license": "Apache-2.0",
   "main": "lib/iobeam.js",
   "dependencies": {
-    "babel": "5.8.x",
+    "babel-cli": "6.3.x",
     "base64url": "1.0.x",
     "fs-extra": "^0.26.0",
     "jsonwebtoken": "5.4.x",
     "keymirror": "~0.1.1",
     "semver": "5.1.x",
-    "superagent": "1.4.x"
+    "superagent": "1.5.x"
   },
   "devDependencies": {
     "eslint": "1.10.x",

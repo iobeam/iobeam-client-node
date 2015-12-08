@@ -36,7 +36,7 @@ Then to include in a project:
 
 By default, an installation script attempts to decide if Babel should be used
 (i.e. for Node versions older than 4.0.0). If you would like to force Babel
-to be used even with newer versions of Node (e.g. when using as part of a 
+to be used even with newer versions of Node (e.g. when using as part of a
 web app), add the following to your `package.json`:
 
     "iobeam": {
@@ -83,27 +83,29 @@ Perhaps the most natural way is to let the device register itself.
 There are two ways to register a `device_id`:
 
 (1) Let iobeam generate one for you:
+```javascript
+var iobeam = require('iobeam-client');
 
-    var iobeam = require('iobeam-client');
+...
 
-    ...
-
-    var builder = new iobeam.Builder(PROJECT_ID, PROJECT_TOKEN)
-                        .saveToDisk()
-                        .register();
-    var iobeamClient = builder.build();
+var builder = new iobeam.Builder(PROJECT_ID, PROJECT_TOKEN)
+                    .saveToDisk()
+                    .register();
+var iobeamClient = builder.build();
+```
 
 (2) Provide your own (must be unique to your project):
+```javascript
+var iobeam = require('iobeam-client');
 
-    var iobeam = require('iobeam-client');
+...
 
-    ...
-
-    var deviceSpec = {deviceId: 'my_desired_id'};
-    var builder = new iobeam.Builder(PROJECT_ID, PROJECT_TOKEN)
-                        .saveToDisk()
-                        .register(deviceSpec);
-    var iobeamClient = builder.build();
+var deviceSpec = {deviceId: 'my_desired_id'};
+var builder = new iobeam.Builder(PROJECT_ID, PROJECT_TOKEN)
+                    .saveToDisk()
+                    .register(deviceSpec);
+var iobeamClient = builder.build();
+```
 
 With the `saveToDisk()` call, the `device_id` will be saved to disk at the
 path provided (if, like in our example, a path isn't provided, it will use
@@ -117,15 +119,16 @@ it will get a new random ID from us. If you provide a _different_ `device_id` to
 If you have registered a `device_id` (e.g. using our
 [CLI](https://github.com/iobeam/iobeam)), you can pass this in the
 constructor and skip the registration step.
+```javascript
+var iobeam = require('iobeam-client');
 
-    var iobeam = require('iobeam-client');
+...
 
-    ...
-
-    var builder = new iobeam.Builder(PROJECT_ID, PROJECT_TOKEN)
-                        .saveToDisk()
-                        .setDeviceId(DEVICE_ID);
-    var iobeamClient = builder.build();
+var builder = new iobeam.Builder(PROJECT_ID, PROJECT_TOKEN)
+                    .saveToDisk()
+                    .setDeviceId(DEVICE_ID);
+var iobeamClient = builder.build();
+```
 
 You *must* have registered some other way (CLI, website, previous
 installation, etc) for this to work.
@@ -134,9 +137,10 @@ installation, etc) for this to work.
 
 If you don't want the `device_id` to be automatically stored for you, simply
 exclude the `setSavePath()` call while building:
-
-    var builder = new iobeam.Builder(PROJECT_ID, PROJECT_TOKEN).register()
-    var iobeamClient = builder.build()
+```javascript
+var builder = new iobeam.Builder(PROJECT_ID, PROJECT_TOKEN).register()
+var iobeamClient = builder.build()
+```
 
 This is useful for cases where you want to persist the ID yourself (e.g.
 in a settings file), or if you are making clients that are
@@ -146,55 +150,38 @@ and have no need to save it.
 
 ### Tracking Time-series Data
 
-For each time-series data point, create a `Datapoint` object, providing
-a value and timestamp.
+To track data, you'll need to create a `iobeam.DataBatch` object that can
+be used to track one or more series of data. To initialize, you create
+the `DataBatch` with the series it will track:
+```javascript
+var batch = new iobeam.DataBatch(["temperature", "humidity"]);
+```
 
-    var t = getTemperature();
-    var d = new iobeam.Datapoint(t, Date.now());
-    // OR:
-    // var d = new iobeam.Datapoint(t);
+The columns are a list of strings. You should group series that are collected
+on the same measurement cycle together. For example, if you collect temperature
+and humidity every 10s, you should group them together; however, if you also
+collect another metric only ever 30s, that should get its own batch.  Then,
+when you have a measurement, add it to the batch as a object, where values
+are keyed by the series they belong to:
+```javascript
+var now = Date.now();
+batch.add(now, {temperature: getTemperature(), humidity: getHumidity()});
+```
 
-(The timestamp provided should be in milliseconds since epoch. The value
-can be integral or real.)
-
-Now, pick a name for your data series (e.g., "temperature"), and add the
-point under that series:
-
-    iobeamClient.addDataPoint("temperature", d)
-
-### Tracking Multiple Series
-
-Some applications will want to track multiple data series. The `iobeamClient`
-object can contain multiple series using the previous method:
-
-    var now = Date.now();
-    var dt = new iobeam.Datapoint(getTemperature(), now);
-    var dh = new iobeam.Datapoint(getHumidity(), now);
-
-    iobeamClient.addDataPoint("temperature", dt)
-    iobeamClient.addDataPoint("humidity", dh)
-
-This method is most useful if the series are on different duty cycles, e.g.,
-one series is measured every 1s and the other is measured every 10s. If you
-have multiple values being measured at the same interval, you could instead
-use a `DataBatch`:
-
-    var now = Date.now();
-    var batch = new iobeam.DataBatch(["temperature", "humidity"]);
-    batch.add(now, {temperature: getTemperature(), humidity: getHumidity()});
-    iobeamClient.addDataBatch(batch);
-
-You create the batch with an array of series -- in this case `temperature` and
-`humidity` -- and then add rows with a timestamp and object containing the
-data values, keyed by the field. You can exclude fields in some rows, but
-if you find this happens more often than not, the first method is preferred.
+You can exclude fields in some rows, but if you find this happens more often than
+not, you should consider reorganizing your batches. Before you send, make sure
+to add the batch to the iobeamClient:
+```javascript
+iobeamClient.addDataBatch(batch);
+```
 
 ### Connecting to the iobeam backend
 
 You can send your data stored in `iobeamClient` to the iobeam backend
 easily:
-
-    iobeamClient.send();
+```javascript
+iobeamClient.send();
+```
 
 This call is asynchronous, and you can optionally provide a callback for
 when it returns. The callback will be passed one argument: a boolean of
@@ -203,29 +190,30 @@ whether it was successful or not.
 ### Full Example
 
 Here's the full source code for our example:
+```javascript
+var iobeam = require('iobeam-client');
 
-    var iobeam = require('iobeam-client');
+// Constants initialization
+PROJECT_ID = ...  // int
+PROJECT_TOKEN = ... // String
+...
 
-    // Constants initialization
-    PROJECT_ID = ...  // int
-    PROJECT_TOKEN = ... // String
-    ...
+// Init iobeam
+var builder = new iobeam.Builder(PROJECT_ID, PROJECT_TOKEN)
+                    .saveToDisk()
+                    .register();
+var iobeamClient = builder.build();
 
-    // Init iobeam
-    var builder = new iobeam.Builder(PROJECT_ID, PROJECT_TOKEN)
-                        .saveToDisk()
-                        .register();
-    var iobeamClient = builder.build();
+...
 
-    ...
+// Data gathering
+var now = Date.now();
+var batch = new iobeam.DataBatch(["temperature", "humidity"]);
+batch.add(now, {temperature: getTemperature(), humidity: getHumidity()});
 
-    // Data gathering
-    var now = Date.now();
-    var batch = new iobeam.DataBatch(["temperature", "humidity"]);
-    batch.add(now, {temperature: getTemperature(), humidity: getHumidity()});
+...
 
-    ...
-
-    // Data transmission
-    iobeamClient.addDataBatch(batch);
-    iobeamClient.send();
+// Data transmission
+iobeamClient.addDataBatch(batch);
+iobeamClient.send();
+```
