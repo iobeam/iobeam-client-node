@@ -125,3 +125,53 @@ describe("adding too many to batch", () => {
         }
     });
 });
+
+describe("tests reset", () => {
+    const batch = new DataBatch(FIELDS);
+
+    it("tests reset removes all rows", () => {
+        for (let i = 0; i < 100; i++) {
+            batch.add(i, {foo: i, bar: i, baz: i});
+            expect(batch.size()).toBe((i + 1) * 3);
+        }
+        batch.reset();
+        expect(batch.size()).toBe(0);
+        expect(batch.rows().length).toBe(0);
+        batch.add(0, {foo: 0, bar: 0, baz: 0});
+        expect(batch.rows().length).toBe(1);
+    });
+});
+
+describe("tests snapshot", () => {
+    const batch = new DataBatch(FIELDS);
+    for (let i = 0; i < 5; i++) {
+        batch.add(i, {foo: i, bar: i, baz: i});
+    }
+
+    it("tests snapshot is a copy", () => {
+        const batch2 = batch.snapshot();
+        expect(batch2.size()).toBe(batch.size());
+        expect(batch2.rows().length).toBe(batch.rows().length);
+        for (let i = 0; i < batch2.fields().length; i++ ) {
+            expect(batch2.fields()[i]).toBe(batch.fields()[i]);
+        }
+        for (let i = 0; i < batch2.rows().length; i++ ) {
+            const t2 = batch2.rows()[i];
+            const t1 = batch.rows()[i];
+            expect(Object.keys(t2).length).toBe(Object.keys(t1).length);
+            Object.keys(t2).forEach((k) => {
+                expect(t2[k]).toBe(t1[k]);
+            });
+        }
+    });
+
+    it("tests snapshot is deep copy", () => {
+        const batch2 = batch.snapshot();
+        expect(batch2.size()).toBe(batch.size());
+        expect(batch2.rows().length).toBe(batch.rows().length);
+
+        batch.add(6, {foo: 6});
+        expect(batch2.size()).toBe(batch.size() - 3);
+        expect(batch2.rows().length).toBe(batch.rows().length - 1);
+    });
+});
