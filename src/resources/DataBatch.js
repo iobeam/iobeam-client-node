@@ -70,8 +70,8 @@ const _DataBatch = function(fields, rows) {
         snapshot: function() {
             return new _DataBatch(this.fields(), this.rows());
         }
-    }
-}
+    };
+};
 
 /**
  * Represents a data batch, i.e., rows of data points.
