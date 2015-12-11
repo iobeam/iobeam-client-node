@@ -18,8 +18,8 @@ Before you can start sending data to the iobeam backend, you'll need a
 [command-line interface (CLI) tool](https://github.com/iobeam/iobeam) or by
 accessing your project settings from [our web app](https://app.iobeam.com).
 
-You will need [Babel](https://www.npmjs.com/package/babel) to use the
-libary:
+If you are using a Node version earlier than v4, you will need
+[Babel](https://www.npmjs.com/package/babel) to use the libary:
 
     npm install -g babel
 
@@ -36,8 +36,8 @@ Then to include in a project:
 
 By default, an installation script attempts to decide if Babel should be used
 (i.e. for Node versions older than 4.0.0). If you would like to force Babel
-to be used even with newer versions of Node (e.g. when using as part of a
-web app), add the following to your `package.json`:
+to be used even with newer versions of Node (e.g. when using the library 
+as part of a web app), add the following to your `package.json`:
 
     "iobeam": {
         "babel": true
@@ -217,3 +217,4 @@ batch.add(now, {temperature: getTemperature(), humidity: getHumidity()});
 iobeamClient.addDataBatch(batch);
 iobeamClient.send();
 ```
+
