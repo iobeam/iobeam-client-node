@@ -6,7 +6,7 @@
   "license": "Apache-2.0",
   "main": "lib/iobeam.js",
   "dependencies": {
-    "babel-cli": "6.3.x",
+    "babel": "5.8.x",
     "base64url": "1.0.x",
     "fs-extra": "^0.26.0",
     "jsonwebtoken": "5.4.x",
