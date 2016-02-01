@@ -2,13 +2,17 @@
 const Exception = require("../exceptions/Exception");
 const Utils = require("../utils/Utils");
 
+const _reserved = ["time", "time_offset", "all"];
+
 const _DataBatch = function(fields, rows) {
-    if (fields.indexOf("time") >= 0) {
-        throw new Exception("'time' is a reserved column name");
-    } else if (fields.indexOf("time_offset") >= 0) {
-        throw new Exception("'time_offset' is a reserved column name");
-    } else if (fields.indexOf("all") >= 0) {
-        throw new Exception("'all' is a reserved column name");
+    const lower = [];
+    for (let f of fields) {
+        lower.push(f.toLowerCase());
+    }
+    for (let r of _reserved) {
+        if (lower.indexOf(r) >= 0) {
+            throw new Exception("'" + r + "' is a reserved column name");
+        }
     }
     
     const _fields = fields;

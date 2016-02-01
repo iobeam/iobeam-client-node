@@ -20,8 +20,11 @@ describe("DataBatch construction", () => {
         check(undefined);
         check("this is not an array");
         check(["col1", "time", "col2"]);
+        check(["TimE", "col1"]);
         check(["col1", "time_offset", "col2"]);
+        check(["Time_OffseT", "col2"]);
         check(["col1", "all", "col2"]);
+        check(["ALL", "none"]);
     });
 
     it("tests constructor", () => {
