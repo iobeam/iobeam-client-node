@@ -27,7 +27,7 @@ if (!forceBabel && semver.gt(process.version, "4.0.0")) {
     });
 } else {
     if (forceBabel) {
-        log("Libaray requested that babel be used.");
+        log("Library requested that babel be used.");
     } else {
         log("Node version too old, using babel.");
     }
