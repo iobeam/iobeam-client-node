@@ -108,6 +108,7 @@ function _Client(projectId, projectToken, services, requester,
     }
 
     __initServices();
+
     const ret = {
 
         /**

@@ -18,7 +18,7 @@ const _DataStore = function(fields, rows) {
     const _fields = fields;
     const _rows = rows;
 
-    return {
+    const ret = {
 
         /**
          * Add a new row to the store at a particular time.
@@ -50,6 +50,14 @@ const _DataStore = function(fields, rows) {
             });
             _rows.push(row);
         },
+
+        /**
+         * Add a new row to the store at the current timestamp.
+         * @param {object} data - Represents data to add for this row, with
+         * the property names representing the fields. Omitted field names are
+         * set to null.
+         */
+        addNow: null,  // Defined below
 
         /* Return the list of fields in this store */
         fields: function() {
@@ -83,6 +91,12 @@ const _DataStore = function(fields, rows) {
             return new _DataStore(this.fields(), this.rows());
         }
     };
+
+    ret.addNow = function(data) {
+        ret.add(Date.now(), data);
+    };
+
+    return ret;
 };
 
 /**
