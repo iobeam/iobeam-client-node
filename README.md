@@ -205,12 +205,11 @@ var iobeamClient = builder.build();
 
 // Data gathering
 var now = Date.now();
-var batch = new iobeam.DataBatch(["temperature", "humidity"]);
+var batch = iobeamClient.createDataStore(["temperature", "humidity"]);
 batch.add(now, {temperature: getTemperature(), humidity: getHumidity()});
 
 ...
 
 // Data transmission
-iobeamClient.addDataBatch(batch);
 iobeamClient.send();
 ```
