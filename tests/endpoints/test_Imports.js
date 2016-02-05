@@ -1,7 +1,7 @@
 "use strict";
 jest.autoMockOff();
 const Imports = require("../../src/endpoints/Imports");
-const DataBatch = require("../../src/resources/DataBatch");
+const DataBatch = require("../../src/resources/DataStore");
 const RequestResults = require("../../src/constants/RequestResults");
 
 let req = null;

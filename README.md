@@ -36,7 +36,7 @@ Then to include in a project:
 
 By default, an installation script attempts to decide if Babel should be used
 (i.e. for Node versions older than 4.0.0). If you would like to force Babel
-to be used even with newer versions of Node (e.g. when using the library 
+to be used even with newer versions of Node (e.g. when using the library
 as part of a web app), add the following to your `package.json`:
 
     "iobeam": {
@@ -56,9 +56,9 @@ At a high-level, here's how it works:
 1. Make sure your device is registered, either generating a `device_id` in
 code or via another method (e.g., our CLI or REST APIs).
 
-1. Create a `Datapoint` object for each time-series data point.
+1. Create a `DataStore` object for groups of related time-series.
 
-1. Add the data point under your `series_name` (e.g., "temperature")
+1. Add rows to the `DataStore` for readings at a timestamp.
 
 1. When you're ready, send your data to the iobeam backend
 
@@ -150,30 +150,27 @@ and have no need to save it.
 
 ### Tracking Time-series Data
 
-To track data, you'll need to create a `iobeam.DataBatch` object that can
+To track data, you'll need to create a `iobeam.DataStore` object that can
 be used to track one or more series of data. To initialize, you create
-the `DataBatch` with the series it will track:
+the `DataStore` with the series it will track:
 ```javascript
-var batch = new iobeam.DataBatch(["temperature", "humidity"]);
+// conditions will be a `iobeam.DataStore` and `iobeamClient` will keep track of it.
+var conditions = iobeamClient.createDataStore(["temperature", "humidity"]);
 ```
 
 The columns are a list of strings. You should group series that are collected
 on the same measurement cycle together. For example, if you collect temperature
 and humidity every 10s, you should group them together; however, if you also
-collect another metric only ever 30s, that should get its own batch.  Then,
-when you have a measurement, add it to the batch as a object, where values
+collect another metric only every 30s, that should get its own `DataStore`.  Then,
+when you have a measurement, add it to the store as an object, where values
 are keyed by the series they belong to:
 ```javascript
 var now = Date.now();
-batch.add(now, {temperature: getTemperature(), humidity: getHumidity()});
+conditions.add(now, {temperature: getTemperature(), humidity: getHumidity()});
 ```
 
 You can exclude fields in some rows, but if you find this happens more often than
-not, you should consider reorganizing your batches. Before you send, make sure
-to add the batch to the iobeamClient:
-```javascript
-iobeamClient.addDataBatch(batch);
-```
+not, you should consider reorganizing your stores.
 
 ### Connecting to the iobeam backend
 
@@ -217,4 +214,3 @@ batch.add(now, {temperature: getTemperature(), humidity: getHumidity()});
 iobeamClient.addDataBatch(batch);
 iobeamClient.send();
 ```
-

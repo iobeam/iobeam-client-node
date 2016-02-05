@@ -1,4 +1,5 @@
 "use strict";
+const util = require("util");
 
 /**
  * Represents a series-centric data point.
@@ -19,4 +20,4 @@ function _DataPoint(value, timestamp) {
     };
 }
 
-module.exports = _DataPoint;
+module.exports = util.deprecate(_DataPoint, "DataPoint has been deprecated. Use DataStore.");

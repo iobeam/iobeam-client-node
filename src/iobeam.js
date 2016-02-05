@@ -1,6 +1,7 @@
 "use strict";
 const fs = require("fs");
 const path = require("path");
+const util = require("util");
 
 const Requester = require("./http/Requester");
 const Utils = require("./utils/Utils");
@@ -9,7 +10,7 @@ const Devices = require("./endpoints/Devices");
 const Imports = require("./endpoints/Imports");
 const Tokens = require("./endpoints/Tokens");
 
-const DataBatch = require("./resources/DataBatch");
+const DataStore = require("./resources/DataStore");
 
 const _ID_FILENAME = "/iobeam_device_id";
 const UTF8_ENC = "utf8";
@@ -71,7 +72,7 @@ function _Client(projectId, projectToken, services, requester,
     }
 
     function __convertSeriesToBatch(name, values) {
-        const batch = new DataBatch([name]);
+        const batch = new DataStore([name]);
         for (let i in values) {
             const pt = values[i];
             const temp = {};
@@ -107,11 +108,7 @@ function _Client(projectId, projectToken, services, requester,
     }
 
     __initServices();
-    return {
-
-        /*dataset: function() {
-            return _dataset;
-        },*/
+    const ret = {
 
         /**
          * Set the device id for this client.
@@ -128,20 +125,37 @@ function _Client(projectId, projectToken, services, requester,
             return _deviceId;
         },
 
-        addDataPoint: function(seriesName, point) {
+        addDataPoint: util.deprecate(function(seriesName, point) {
             Utils.assertValidDataPoint(point);
             if (!_dataset.hasOwnProperty(seriesName)) {
                 _dataset[seriesName] = [];
             }
             _dataset[seriesName].push(point);
-        },
+        }, "Using Datapoints is deprecated. Use DataStore instead."),
 
         /**
          * Add a DataBatch to be sent.
          * @param {DataBatch} dataBatch - Batch of data o be sent.
          */
-        addDataBatch: function(dataBatch) {
-            _batches.push(dataBatch);
+        addDataBatch: null,  // deprecated below
+
+        /**
+         * Add a DataStore to be sent.
+         * @param {DataStore} dataStore - Store of data o be sent.
+         */
+        addDataStore: function(dataStore) {
+            _batches.push(dataStore);
+        },
+
+        /**
+         * Create and track DataStore to be sent.
+         * @param {array} columns - Columns to track in the DataStore.
+         * @return {DataStore} DataStore object in which to add data.
+         */
+        createDataStore: function(columns) {
+            const ret = new DataStore(columns);
+            _batches.push(ret);
+            return ret;
         },
 
         /**
@@ -228,6 +242,10 @@ function _Client(projectId, projectToken, services, requester,
             __startMsgQueue();
         }
     };
+    ret.addDataBatch = util.deprecate(ret.addDataStore,
+                                      "'addDataBatch' is deprecated. Use 'addDataStore'.");
+
+    return ret;
 }
 
 /**
@@ -338,5 +356,6 @@ function _Builder(projectId, projectToken) {
 module.exports = {
     Builder: _Builder,
     Datapoint: require("./resources/Datapoint"),
-    DataBatch: require("./resources/DataBatch")
+    DataBatch: require("./resources/DataBatch"),
+    DataStore: DataStore
 };
