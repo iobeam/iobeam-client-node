@@ -1,24 +1,25 @@
 {
     "rules": {
-        "indent": [
-            2,
-            4,
-            {"SwitchCase": 1}
-        ],
-        "quotes": [
-            1,
-            "double"
-        ],
-        "linebreak-style": [
-            0,
-            "windows"
-        ],
-        "semi": [
-            2,
-            "always"
-        ],
-        "max-len": [2, 100, 4],
-        "no-console": 0
+        "comma-spacing": [2, {"after": true}],
+        "eol-last": 1,
+        "indent": [2, 4, {"SwitchCase": 1}],
+        "key-spacing": [2, {"beforeColon": false, "afterColon": true}],
+        "linebreak-style": [0, "windows"],
+        "max-len": [0, 120, 4],
+        "no-console": 0,
+        "no-const-assign": 2,
+        "no-mixed-spaces-and-tabs": 2,
+        "no-spaced-func": 2,
+        "no-trailing-spaces": 2,
+        "no-unused-vars": 1,
+        "no-var": 2,
+        "prefer-const": 0,
+        "quotes": [1, "double"],
+        "semi": [2, "always"],
+        "space-after-keywords": 2,
+        "space-before-blocks": 2,
+        "space-before-keywords": 2,
+        "space-return-throw-case": 2
     },
     "env": {
         "es6": true,
@@ -29,7 +30,5 @@
     "ecmaFeatures": {
         "jsx": true,
         "experimentalObjectRestSpread": true
-    },
-    "plugins": [
-    ]
+    }
 }

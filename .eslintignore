@@ -1,0 +1,5 @@
+lib/*
+compile.js
+node_modules/*
+target/*
+tests/*

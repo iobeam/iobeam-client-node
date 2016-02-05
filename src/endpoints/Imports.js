@@ -51,7 +51,7 @@ module.exports = {
         }
 
         const req = _requester.postRequest(URL, reqBody, _token);
-        const innerCb = Utils.createInnerCb(callback, null, function(){});
+        const innerCb = Utils.createInnerCb(callback, null, function() {});
         _requester.execute(req, innerCb);
     },
 
@@ -102,7 +102,7 @@ module.exports = {
         };
 
         const req = _requester.postRequest(URL, reqBody, _token);
-        const innerCb = Utils.createInnerCb(callback, null, function(){});
+        const innerCb = Utils.createInnerCb(callback, null, function() {});
         _requester.execute(req, innerCb);
     }
 };

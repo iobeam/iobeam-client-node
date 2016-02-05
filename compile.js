@@ -1,6 +1,6 @@
 var fs = require("fs-extra");
 var semver = require("semver");
-var exec = require("child_process").exec
+var exec = require("child_process").exec;
 
 var prefix = "[iobeam-client] ";
 
@@ -8,13 +8,14 @@ function log(msg) {
     console.log(prefix + msg);
 }
 
-var forceBabel = false;
+var forceBabel;
 // if dependency, check the package.json
 try {
     var pjson = require(__dirname + "/../../package.json");
     var iobeamClient = pjson.iobeam;
     forceBabel = iobeamClient.babel || false;
 } catch (Exception) {
+    forceBabel = false;
 }
 
 log("Determining whether to use Babel or not...");

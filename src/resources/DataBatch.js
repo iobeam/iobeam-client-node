@@ -14,7 +14,7 @@ const _DataBatch = function(fields, rows) {
             throw new Exception("'" + r + "' is a reserved column name");
         }
     }
-    
+
     const _fields = fields;
     const _rows = rows;
 
