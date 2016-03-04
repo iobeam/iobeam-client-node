@@ -3,3 +3,4 @@ compile.js
 node_modules/*
 target/*
 tests/*
+es5/*

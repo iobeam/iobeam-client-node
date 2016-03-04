@@ -6,3 +6,4 @@ lib/*
 npm-debug.log
 iobeam_device_id
 test.js
+es5/*

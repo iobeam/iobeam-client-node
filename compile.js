@@ -13,29 +13,29 @@ var forceBabel;
 try {
     var pjson = require(__dirname + "/../../package.json");
     var iobeamClient = pjson.iobeam;
-    forceBabel = iobeamClient.babel || false;
+    forceBabel = iobeamClient.babel || iobeamClient.es5 || false;
 } catch (Exception) {
     forceBabel = false;
 }
 
-log("Determining whether to use Babel or not...");
+log("Determining whether to use ES5 or not...");
 if (!forceBabel && semver.gt(process.version, "4.0.0")) {
-    log("Babel not needed, using original files.");
-    fs.copySync("./src", "./lib", {clobber: true}, function(err) {
-        if (err) {
+    log("ES5 not needed, using original files.");
+
+    try {
+        fs.copySync("./src", "./lib", {clobber: true});
+    } catch (err) {
             return console.error(err);
-        }
-    });
+    }
 } else {
     if (forceBabel) {
-        log("Library requested that babel be used.");
+        log("Library requested that es5 be used.");
     } else {
-        log("Node version too old, using babel.");
+        log("Node version too old, using es5.");
     }
-    exec("npm run babel", function(err) {
-        if (err !== null) {
-            console.log(err);
-            return -1;
-        }
-    });
+    try {
+        fs.copySync("./es5", "./lib", {clobber: true});
+    } catch (err) {
+            return console.error(err);
+    }
 }
