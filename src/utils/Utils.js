@@ -101,6 +101,8 @@ module.exports = {
                 JSON.stringify(deviceId));
         } else if (deviceId.length <= 0) {
             throw new ApiException("deviceId too short: " + deviceId.length);
+        } else if (deviceId.match("[a-zA-Z0-9:_-]+")[0] != deviceId) {
+            throw new ApiException("Device id can only include a-z, A-Z, 0-9, _, :, and -");
         }
     },
 
