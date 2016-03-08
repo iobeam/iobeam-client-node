@@ -119,22 +119,24 @@ describe("add now", () => {
         expect(have.bar).toBe(wantData.bar);
         expect(have.baz).toBe(wantData.baz);
     }
-    let now = 1000;
-    MockDate.set(now);
-    const batch = new DataStore(FIELDS);
-    const row1 = {foo: 1.0, bar: 2.0, baz: 3.0};
-    batch.addNow(row1);
-    let have = batch.rows();
-    expect(have.length).toBe(1);
-    check(have[0], now, row1);
+    it("tests functionality", () => {
+        let now = 1000;
+        MockDate.set(now);
+        const batch = new DataStore(FIELDS);
+        const row1 = {foo: 1.0, bar: 2.0, baz: 3.0};
+        batch.addNow(row1);
+        let have = batch.rows();
+        expect(have.length).toBe(1);
+        check(have[0], now, row1);
 
-    now = 2000;
-    MockDate.set(now);
-    const row2 = {foo: 4.0, bar: 5.0, baz: 6.0};
-    batch.addNow(row2);
-    have = batch.rows();
-    expect(have.length).toBe(2);
-    check(have[1], now, row2);
+        now = 2000;
+        MockDate.set(now);
+        const row2 = {foo: 4.0, bar: 5.0, baz: 6.0};
+        batch.addNow(row2);
+        have = batch.rows();
+        expect(have.length).toBe(2);
+        check(have[1], now, row2);
+    });
 });
 
 describe("adding too many to batch", () => {
