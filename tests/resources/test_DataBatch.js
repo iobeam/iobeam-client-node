@@ -1,7 +1,6 @@
 "use strict";
 jest.autoMockOff();
-const MockDate = require("mockdate");
-const DataBatch = require("../../src/resources/DataBatch")
+const DataBatch = require("../../src/resources/DataBatch");
 
 const FIELDS = ["foo", "bar", "baz"];
 

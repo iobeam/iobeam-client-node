@@ -32,7 +32,7 @@ const _deviceIds = new Set();
 function registerDevice(deviceId, deviceName) {
     if (_deviceIds.has(deviceId)) {
         const err = {message: "no dupe id", code: 150};
-        return {status: 422, type: "application/json", body: {errors: [err]}}
+        return {status: 422, type: "application/json", body: {errors: [err]}};
     }
     _deviceIds.add(deviceId);
     return {status: 200, type: "application/json", body: {device_id: deviceId, device_name: deviceName}};
@@ -146,6 +146,6 @@ const DummyRequester = {
     },
 
     getLastRequest: () => _lastReq
-}
+};
 
 module.exports = DummyRequester;

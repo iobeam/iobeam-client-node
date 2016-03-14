@@ -1,7 +1,7 @@
 "use strict";
 jest.autoMockOff();
 const MockDate = require("mockdate");
-const DataStore = require("../../src/resources/DataStore")
+const DataStore = require("../../src/resources/DataStore");
 
 const FIELDS = ["foo", "bar", "baz"];
 

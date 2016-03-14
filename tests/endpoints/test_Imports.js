@@ -12,17 +12,17 @@ const fakeImportRequester = {
     },
     getLastRequest: () => req,
     getFullEndpoint: (e) => e,
-    getRequest: () => { ; },
+    getRequest: () => { },
     postRequest: (url, body, token) => {
         req = {
             url: url,
             body: body,
             token: token
-        }
-        return req
+        };
+        return req;
     },
     reset: () => { req = null; }
-}
+};
 
 describe("test sending", () => {
     Imports.initialize("bad token", fakeImportRequester);
@@ -41,7 +41,7 @@ describe("test sending", () => {
     });
 
     it("checks request is right", () => {
-       const cb = (resp) => {
+        const cb = () => {
             const req = fakeImportRequester.getLastRequest().body;
             expect(req.project_id).toBe(PROJECT_ID);
             expect(req.device_id).toBe(DEVICE_ID);
@@ -64,7 +64,7 @@ describe("test batch send", () => {
             const req = fakeImportRequester.getLastRequest();
             expect(req).toBeNull();
             expect(resp.success).toBe(true);
-        }
+        };
         Imports.importBatch(PROJECT_ID, DEVICE_ID, batch, cb);
     });
 
@@ -75,7 +75,7 @@ describe("test batch send", () => {
         batch.add(20, {foo: 5.0});
         fakeImportRequester.reset();
 
-        const cb = (resp) => {
+        const cb = () => {
             const req = fakeImportRequester.getLastRequest().body;
             expect(req.project_id).toBe(PROJECT_ID);
             expect(req.device_id).toBe(DEVICE_ID);

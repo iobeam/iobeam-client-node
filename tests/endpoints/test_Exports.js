@@ -50,7 +50,7 @@ describe("tests query", () => {
             sname: null,
             opts: {to: 10, from: 0, limit: 3},
             opts_len: 3
-        },
+        }
     ];
 
     cases.forEach( (c) => {
