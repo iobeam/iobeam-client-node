@@ -7,6 +7,9 @@ const _reserved = ["time", "time_offset", "all"];
 const _DataStore = function(fields, rows) {
     const lower = [];
     for (let f of fields) {
+        if (f === undefined || f === null || f === "" || typeof(f) !== "string") {
+            throw new Exception("Column name cannot be empty");
+        }
         lower.push(f.toLowerCase());
     }
     for (let r of _reserved) {

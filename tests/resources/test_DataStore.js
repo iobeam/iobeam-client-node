@@ -25,6 +25,10 @@ describe("DataStore construction", () => {
         check(["Time_OffseT", "col2"]);
         check(["col1", "all", "col2"]);
         check(["ALL", "none"]);
+        check(["fine", undefined]);
+        check(["fine", null]);
+        check(["fine", ""]);
+        check(["fine", 5]);
     });
 
     it("tests constructor", () => {
