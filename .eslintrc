@@ -1,7 +1,10 @@
 {
     "rules": {
         "comma-spacing": [2, {"after": true}],
+        "consistent-return": 2,
+        "curly": 1,
         "eol-last": 1,
+        "eqeqeq": 2,
         "indent": [2, 4, {"SwitchCase": 1}],
         "key-spacing": [2, {"beforeColon": false, "afterColon": true}],
         "linebreak-style": [0, "windows"],
@@ -11,23 +14,20 @@
         "no-mixed-spaces-and-tabs": 2,
         "no-spaced-func": 2,
         "no-trailing-spaces": 2,
+        "no-unreachable": 2,
         "no-unused-vars": 1,
         "no-var": 2,
         "prefer-const": 0,
         "quotes": [1, "double"],
+        "react/display-name": 0,
         "semi": [2, "always"],
-        "keyword-spacing": [2, {"before": true, "after": true}],
-        "space-before-blocks": 2,
-        "space-return-throw-case": 2
+        "keyword-spacing": [2, {"before": true, "after": true, "overrides": null}],
+        "space-before-blocks": 2
     },
     "env": {
         "es6": true,
         "node": true,
         "browser": true
     },
-    "extends": "eslint:recommended",
-    "ecmaFeatures": {
-        "jsx": true,
-        "experimentalObjectRestSpread": true
-    }
+    "extends": ["eslint:recommended"],
 }
