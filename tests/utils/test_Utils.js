@@ -50,9 +50,9 @@ describe("isCallback", () => {
         {msg: "checks null is false", arg: null, res: false},
         {msg: "checks undefined is false", arg: undefined, res: false},
         {msg: "checks non-func is false", arg: "callback", res: false},
-        {msg: "checks anon func is true", arg: function(){}, res: true},
+        {msg: "checks anon func is true", arg: function() {}, res: true},
         {msg: "checks func is true", arg: f, res: true}
-    ]
+    ];
 
     cases.forEach((e) => {
         it(e.msg, () => {
@@ -109,7 +109,7 @@ describe("isExpiredToken", () => {
     it("tests after is expired", () => {
         MockDate.set(1449234660001);
         expect(f()).toBe(true);
-    })
+    });
 });
 
 

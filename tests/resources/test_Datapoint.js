@@ -1,7 +1,7 @@
 "use strict";
 jest.autoMockOff();
 const MockDate = require("mockdate");
-const Datapoint = require("../../src/resources/Datapoint")
+const Datapoint = require("../../src/resources/Datapoint");
 
 describe("datapoint construction", () => {
     const TEST_VAL = 5;

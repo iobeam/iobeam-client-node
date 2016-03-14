@@ -57,8 +57,8 @@ describe("execute", () => {
             expect: RequestResults.FAILURE
         }
     ];
-    
-    console.log = function(){};
+
+    console.log = function() {};
     cases.forEach((e) => {
         it(e.msg, () => {
             const req = {
@@ -67,7 +67,7 @@ describe("execute", () => {
                     cb(e.err, e.res);
                 }
             };
-            const cb = (status, res, ctxt) => {
+            const cb = (status) => {
                 if (status === RequestResults.PENDING) {
                     return;
                 }
