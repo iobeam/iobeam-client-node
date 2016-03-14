@@ -20,7 +20,7 @@ module.exports = {
         const did = deviceId || "all";
         const sname = seriesName || "all";
         const opts = options || {};
-        if (did != "all") {
+        if (did !== "all") {
             Utils.assertValidDeviceId(did);
         }
         const endpoint = "/exports/" + projectId + "/" + did + "/" + sname;
@@ -46,9 +46,9 @@ module.exports = {
             req.query({output: opts.output});
         }
         const bodyHandler = function(resp, body, status) {
-            if (status == RequestResults.SUCCESS) {
+            if (status === RequestResults.SUCCESS) {
                 resp.body = body;
-            } else if (status == RequestResults.FAILURE) {
+            } else if (status === RequestResults.FAILURE) {
                 resp.error = body.errors[0].message;
             }
         };

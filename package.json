@@ -15,7 +15,7 @@
   },
   "devDependencies": {
     "babel": "5.8.x",
-    "eslint": "1.10.x",
+    "eslint": "2.4.x",
     "jest-cli": "0.9.x",
     "mockdate": "1.0.x"
   },
