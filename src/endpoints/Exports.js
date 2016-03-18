@@ -5,6 +5,14 @@ const Utils = require("../utils/Utils");
 let _token = null;
 let _requester = null;
 
+function setOpt(request, opts, name) {
+    const temp = {};
+    if (opts[name]) {
+        temp[name] = opts[name];
+        request.query(temp);
+    }
+}
+
 module.exports = {
 
     initialize: function(token, requester) {
@@ -33,18 +41,14 @@ module.exports = {
         };
 
         const req = _requester.getRequest(URL, _token);
-        if (opts.limit) {
-            req.query({limit: opts.limit});
-        }
-        if (opts.from) {
-            req.query({from: opts.from});
-        }
-        if (opts.to) {
-            req.query({to: opts.to});
-        }
-        if (opts.output === "csv" || opts.output === "json") {
-            req.query({output: opts.output});
-        }
+        setOpt(req, opts, "limit");
+        setOpt(req, opts, "from");
+        setOpt(req, opts, "to");
+        setOpt(req, opts, "output");
+        setOpt(req, opts, "group_by");
+        setOpt(req, opts, "operator");
+        setOpt(req, opts, "timefmt");
+
         const bodyHandler = function(resp, body, status) {
             if (status === RequestResults.SUCCESS) {
                 resp.body = body;

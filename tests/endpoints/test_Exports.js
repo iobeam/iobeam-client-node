@@ -48,8 +48,8 @@ describe("tests query", () => {
             url: DummyRequester.BASE_URL + "/exports/1/all/all",
             did: null,
             sname: null,
-            opts: {to: 10, from: 0, limit: 3},
-            opts_len: 3
+            opts: {to: 10, from: 0, limit: 3, output: "json", group_by: "1d", operator: "sum"},
+            opts_len: 6
         }
     ];
 
@@ -63,7 +63,8 @@ describe("tests query", () => {
                 expect(context.projectId).toBe(PROJECT_ID);
                 expect(context.deviceId).toBe(c.did);
                 expect(context.seriesName).toBe(c.sname);
-                expect(Object.keys(context.options).length).toBeDefined(c.opts_len);
+                expect(Object.keys(context.options).length).toBeDefined();
+                expect(Object.keys(context.options).length).toBe(c.opts_len);
                 if (c.opts_len > 0) {
                     for (let k in context.options) {
                         expect(k in c.opts).toBe(true);
