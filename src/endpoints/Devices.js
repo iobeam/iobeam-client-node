@@ -56,12 +56,14 @@ module.exports = {
      * randomly generated)
      * @param {string} deviceName - Optional, desired device name (otherwise
      * randomly generated)
+     * @param {string} deviceType - Optional, desired device type
      */
-    register: function(projectId, callback, deviceId, deviceName) {
+    register: function(projectId, callback, deviceId, deviceName, deviceType) {
         Utils.assertValidToken(_token);
         const URL = _requester.getFullEndpoint("/devices");
         const did = deviceId || null;
         const dname = deviceName || null;
+        const dtype = deviceType || null;
 
         const reqBody = {project_id: projectId};
         if (did !== null) {
@@ -70,19 +72,27 @@ module.exports = {
         if (dname !== null) {
             reqBody.device_name = dname;
         }
+        if (dtype !== null) {
+            reqBody.device_type = dtype;
+        }
 
         const context = {
             projectId: projectId,
             deviceId: deviceId,
-            deviceName: deviceName
+            deviceName: deviceName,
+            deviceType: deviceType
         };
         const req = _requester.postRequest(URL, reqBody, _token);
         const bodyHandler = function(resp, body, status) {
             if (status === RequestResults.SUCCESS) {
                 resp.device = {
                     device_id: body.device_id,
-                    device_name: body.device_name
+                    device_name: body.device_name,
+                    created: body.created
                 };
+                if (body.device_type) {
+                    resp.device.device_type = body.device_type;
+                }
             } else if (status === RequestResults.FAILURE) {
                 if (body && body.errors) {
                     resp.error = body.errors[0];
