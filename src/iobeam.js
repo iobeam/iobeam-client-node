@@ -161,13 +161,14 @@ function _Client(projectId, projectToken, services, requester,
 
         /**
          * Register this client with a device
-         * @param {string} deviceId - Optional, desired device Id
-         * @param {string} deviceName - Optional, desired device name
-         * @param {function} callback - Optional, function to call with response
+         * @param {string} deviceId - Optional: desired device id
+         * @param {string} deviceName - Optional: desired device name
+         * @param {function} callback - Optional: function to call with response
          * @param {bool} setOnDupe - If true, will set this client to use the deviceId
          * if it already exists.
+         * @param {string} deviceType - Optional: desired device type
          */
-        register: function(deviceId, deviceName, callback, setOnDupe) {
+        register: function(deviceId, deviceName, callback, setOnDupe, deviceType) {
             deviceId = deviceId || null;
             setOnDupe = setOnDupe || false;
             if (!__hasService("devices")) {
@@ -199,7 +200,7 @@ function _Client(projectId, projectToken, services, requester,
 
             __checkToken();
             _msgQueue.push(function() {
-                _services.devices.register(_projectId, cb, deviceId, deviceName);
+                _services.devices.register(_projectId, cb, deviceId, deviceName, deviceType);
             });
             __startMsgQueue();
         },
@@ -331,6 +332,9 @@ function _Builder(projectId, projectToken) {
                 if (deviceSpec.deviceName) {
                     _regArgs.deviceName = deviceSpec.deviceName;
                 }
+                if (deviceSpec.deviceType) {
+                    _regArgs.deviceType = deviceSpec.deviceType;
+                }
             }
             return this;
         },
@@ -347,7 +351,8 @@ function _Builder(projectId, projectToken) {
                                    _deviceId, _savePath);
             if (_regArgs !== null) {
                 client.register(_regArgs.deviceId, _regArgs.deviceName,
-                                _regArgs.callback, _regArgs.setOnDupe);
+                                _regArgs.callback, _regArgs.setOnDupe,
+                                _regArgs.deviceType);
             }
             return client;
         }
