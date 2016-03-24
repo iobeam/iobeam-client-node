@@ -2,10 +2,8 @@ var fs = require("fs-extra");
 var semver = require("semver");
 var exec = require("child_process").exec;
 
-var prefix = "[iobeam-client] ";
-
 function log(msg) {
-    console.log(prefix + msg);
+    console.log("[iobeam-client] " + msg);
 }
 
 var forceBabel;
@@ -18,24 +16,22 @@ try {
     forceBabel = false;
 }
 
+var src;
 log("Determining whether to use ES5 or not...");
 if (!forceBabel && semver.gt(process.version, "4.0.0")) {
     log("ES5 not needed, using original files.");
-
-    try {
-        fs.copySync("./src", "./lib", {clobber: true});
-    } catch (err) {
-            return console.error(err);
-    }
+    src = "./src";
 } else {
     if (forceBabel) {
-        log("Library requested that es5 be used.");
+        log("Library requested that ES5 be used.");
     } else {
-        log("Node version too old, using es5.");
+        log("Node version too old, using ES5.");
     }
-    try {
-        fs.copySync("./es5", "./lib", {clobber: true});
-    } catch (err) {
-            return console.error(err);
-    }
+    src = "./es5";
+}
+
+try {
+    fs.copySync(src, "./lib", {clobber: true});
+} catch (err) {
+        return console.error(err);
 }
