@@ -1,5 +1,4 @@
 "use strict";
-const base64url = require("base64url");
 const jwt = require("jsonwebtoken");
 
 const RequestResults = require("../constants/RequestResults");
@@ -74,7 +73,7 @@ module.exports = {
     },
 
     isExpiredToken: function(token) {
-        const tb64url = base64url.fromBase64(token);
+        const tb64url = token.replace(/=/g, '').replace(/\+/g, '-').replace(/\//g, '_');
         const decoded = jwt.decode(tb64url);
         return new Date().getTime() >= (decoded.exp * 1000);
     },

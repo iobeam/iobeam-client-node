@@ -1,12 +1,11 @@
 {
   "name": "iobeam-client",
-  "version": "0.6.6",
+  "version": "0.6.7-beta",
   "description": "Client library for connecting to iobeam",
   "repository": "https://github.com/iobeam/iobeam-client-node",
   "license": "Apache-2.0",
   "main": "lib/iobeam.js",
   "dependencies": {
-    "base64url": "1.0.x",
     "fs-extra": "0.26.x",
     "jsonwebtoken": "5.7.x",
     "keymirror": "~0.1.1",

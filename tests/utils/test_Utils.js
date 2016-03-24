@@ -97,10 +97,16 @@ describe("isInArray", () => {
 
 describe("isExpiredToken", () => {
     const TOKEN = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiIsImtpZCI6MTB9.eyJ1aWQiOjAsInBpZCI6MzIsImV4cCI6MTQ0OTIzNDY2MCwicG1zIjo3fQ==.notlegitsignature=";
+    const TOKEN_URL = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiIsImtpZCI6MTB9.eyJ1aWQiOjAsInBpZCI6MzIsImV4cCI6MTQ0OTIzNDY2MCwicG1zIjo3fQ.notlegitsignature=";
     const f = () => Utils.isExpiredToken(TOKEN);
+    const f2 = () => Utils.isExpiredToken(TOKEN_URL);
     it("tests non-expired", () => {
         MockDate.set(1449234659999);
         expect(f()).toBe(false);
+    });
+    it("tests non-expired w/ url-safe token", () => {
+        MockDate.set(1449234659999);
+        expect(f2()).toBe(false);
     });
     it("tests exact expired", () => {
         MockDate.set(1449234660000);
