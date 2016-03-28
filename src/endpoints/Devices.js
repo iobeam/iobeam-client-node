@@ -1,5 +1,6 @@
 "use strict";
 const RequestResults = require("../constants/RequestResults");
+const Device = require("../resources/Device");
 const Utils = require("../utils/Utils");
 
 let _token = null;
@@ -85,13 +86,13 @@ module.exports = {
         const req = _requester.postRequest(URL, reqBody, _token);
         const bodyHandler = function(resp, body, status) {
             if (status === RequestResults.SUCCESS) {
-                resp.device = {
-                    device_id: body.device_id,
-                    device_name: body.device_name,
-                    created: body.created
-                };
+                resp.device = new Device(body.device_id, body.device_name, body.device_type, body.created);
+                /* TODO(rrk): Deprecated, remove in v0.8.0 */
+                resp.device.device_id = resp.device.getId();
+                resp.device.device_name = resp.device.getName();
+                resp.device.created = resp.device.getCreated();
                 if (body.device_type) {
-                    resp.device.device_type = body.device_type;
+                    resp.device.device_type = resp.device.getType();
                 }
             } else if (status === RequestResults.FAILURE) {
                 if (body && body.errors) {

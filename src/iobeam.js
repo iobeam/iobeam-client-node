@@ -11,6 +11,7 @@ const Imports = require("./endpoints/Imports");
 const Tokens = require("./endpoints/Tokens");
 
 const DataStore = require("./resources/DataStore");
+const Device = require("./resources/Device");
 
 const _ID_FILENAME = "/iobeam_device_id";
 const UTF8_ENC = "utf8";
@@ -181,11 +182,13 @@ function _Client(projectId, projectToken, services, requester,
 
             const cb = function(deviceResp) {
                 if (deviceResp.success) {
-                    __setDeviceId(deviceResp.device.device_id);
+                    __setDeviceId(deviceResp.device.getId());
                 } else if (setOnDupe && deviceResp.error && deviceResp.error.code === 150) {
                     __setDeviceId(deviceId);
                     deviceResp.success = true;
-                    deviceResp.device = {device_id: deviceId};
+                    deviceResp.device = new Device(deviceId);
+                    /* TODO(rrk): Deprecated, remove in v0.8.0 */
+                    deviceResp.device.device_id = deviceResp.device.getId();
                     // TODO what about device name?
                 }
 
@@ -363,5 +366,6 @@ module.exports = {
     Builder: _Builder,
     Datapoint: require("./resources/Datapoint"),
     DataBatch: require("./resources/DataBatch"),
-    DataStore: DataStore
+    DataStore: DataStore,
+    Device: Device
 };
