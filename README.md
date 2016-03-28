@@ -200,8 +200,8 @@ var iobeamClient = builder.build();
 
 // Data gathering
 var now = Date.now();
-var batch = iobeamClient.createDataStore(["temperature", "humidity"]);
-batch.add(now, {temperature: getTemperature(), humidity: getHumidity()});
+var conditions = iobeamClient.createDataStore(["temperature", "humidity"]);
+conditions.add(now, {temperature: getTemperature(), humidity: getHumidity()});
 
 ...
 
