@@ -56,17 +56,17 @@ module.exports = {
     },
 
     /**
-     * Performs API call to send data in batch/table format.
+     * Performs API call to send data in store/table format.
      * @param {int} projectId - Project ID this data belongs to
      * @param {string} deviceId - Device ID this data belongs to
-     * @param {DataBatch} batch - Data in table format
+     * @param {DataStore} store - Data in table format
      * @param {function} callback - Function to be called after request returns.
      */
-    importBatch: function(projectId, deviceId, batch, callback) {
+    importBatch: function(projectId, deviceId, store, callback) {
         Utils.assertValidToken(_token);
         Utils.assertValidProjectId(projectId);
         Utils.assertValidDeviceId(deviceId);
-        if (batch.rows().length === 0) {
+        if (store.rows().length === 0) {
             if (Utils.isCallback(callback)) {
                 const resp = Utils.getDefaultApiResp(RequestResults.SUCCESS, {status: 200});
                 callback(resp);
@@ -82,11 +82,11 @@ module.exports = {
         };
 
         const fields = ["time"];
-        batch.fields().forEach(function(f) {
+        store.fields().forEach(function(f) {
             fields.push(f);
         });
 
-        const rows = batch.rows();
+        const rows = store.rows();
         const data = [];
         rows.forEach(function(r) {
             const temp = [];

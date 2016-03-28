@@ -1,7 +1,6 @@
 "use strict";
 const fs = require("fs");
 const path = require("path");
-const util = require("util");
 
 const Requester = require("./http/Requester");
 const Utils = require("./utils/Utils");
@@ -24,10 +23,10 @@ function _Client(projectId, projectToken, services, requester,
 
     /* Private vars */
     const _projectId = projectId;
+    const _services = services;
+    const _batches = [];
     let _token = projectToken;
     let _deviceId = deviceId || null;
-    const _dataset = {};
-    const _batches = [];
 
     // Use the disk cache if the id is there / it is provided.
     const _path = p ? path.join(p, _ID_FILENAME) : null;
@@ -39,7 +38,6 @@ function _Client(projectId, projectToken, services, requester,
         }
     }
 
-    const _services = services;
     const _msgQueue = [];
     let _inProgress = false;
 
@@ -59,9 +57,8 @@ function _Client(projectId, projectToken, services, requester,
             return false;
         } else if (!Utils.isSet(_services[key])) {
             return false;
-        } else {
-            return true;
         }
+        return true;
     }
 
     function __startMsgQueue() {
@@ -70,17 +67,6 @@ function _Client(projectId, projectToken, services, requester,
             const next = _msgQueue.shift();
             next();
         }
-    }
-
-    function __convertSeriesToBatch(name, values) {
-        const batch = new DataStore([name]);
-        for (let i in values) {
-            const pt = values[i];
-            const temp = {};
-            temp[name] = pt.value;
-            batch.add(pt.timestamp, temp);
-        }
-        return batch;
     }
 
     function __setNewToken(resp) {
@@ -126,20 +112,6 @@ function _Client(projectId, projectToken, services, requester,
         getDeviceId: function() {
             return _deviceId;
         },
-
-        addDataPoint: util.deprecate(function(seriesName, point) {
-            Utils.assertValidDataPoint(point);
-            if (!_dataset.hasOwnProperty(seriesName)) {
-                _dataset[seriesName] = [];
-            }
-            _dataset[seriesName].push(point);
-        }, "Using Datapoints is deprecated. Use DataStore instead."),
-
-        /**
-         * Add a DataBatch to be sent.
-         * @param {DataBatch} dataBatch - Batch of data o be sent.
-         */
-        addDataBatch: null,  // deprecated below
 
         /**
          * Add a DataStore to be sent.
@@ -227,11 +199,6 @@ function _Client(projectId, projectToken, services, requester,
                 __startMsgQueue();
             };
 
-            for (let s in _dataset) {
-                _batches.push(__convertSeriesToBatch(s, _dataset[s]));
-                delete _dataset[s];
-            }
-
             __checkToken();
             for (let i in _batches) {
                 const b = _batches[i];
@@ -247,8 +214,6 @@ function _Client(projectId, projectToken, services, requester,
             __startMsgQueue();
         }
     };
-    ret.addDataBatch = util.deprecate(ret.addDataStore,
-                                      "'addDataBatch' is deprecated. Use 'addDataStore'.");
 
     return ret;
 }
@@ -364,8 +329,6 @@ function _Builder(projectId, projectToken) {
 
 module.exports = {
     Builder: _Builder,
-    Datapoint: require("./resources/Datapoint"),
-    DataBatch: require("./resources/DataBatch"),
     DataStore: DataStore,
     Device: Device
 };

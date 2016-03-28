@@ -3,7 +3,6 @@ const jwt = require("jsonwebtoken");
 
 const RequestResults = require("../constants/RequestResults");
 const ApiException = require("../exceptions/ApiException");
-const Exception = require("../exceptions/Exception");
 
 function isFunction(f) {
     return f !== null && typeof(f) === "function";
@@ -73,7 +72,7 @@ module.exports = {
     },
 
     isExpiredToken: function(token) {
-        const tb64url = token.replace(/=/g, '').replace(/\+/g, '-').replace(/\//g, '_');
+        const tb64url = token.replace(/=/g, "").replace(/\+/g, "-").replace(/\//g, "_");
         const decoded = jwt.decode(tb64url);
         return new Date().getTime() >= (decoded.exp * 1000);
     },
@@ -105,18 +104,10 @@ module.exports = {
         }
     },
 
-    assertValidDataPoint: function(datapoint) {
-        if (datapoint === null || typeof(datapoint) === "undefined") {
-            throw new ApiException("Invalid datapoint: " + JSON.stringify(datapoint));
-        } else if (!datapoint.hasOwnProperty("timestamp") || !datapoint.hasOwnProperty("value")) {
-            throw new ApiException("Invalid datapoint: " + JSON.stringify(datapoint));
-        }
-    },
-
     // TODO - change Exception type
     assertValidRequester: function(requester) {
         if (requester === null || typeof(requester) === "undefined") {
-            throw new Exception("Invalid requester");
+            throw new ApiException("Invalid requester");
         }
         // Check that it has necessary functions:
         const hasExecute = isFunction(requester.execute);
@@ -125,7 +116,7 @@ module.exports = {
         const hasPostRequest = isFunction(requester.postRequest);
 
         if (!hasExecute || !hasGetFullEndpoint || !hasGetRequest || !hasPostRequest) {
-            throw new Exception("Invalid requester");
+            throw new ApiException("Invalid requester");
         }
     }
 };
