@@ -1,7 +1,7 @@
 "use strict";
 jest.autoMockOff();
 const Imports = require("../../src/endpoints/Imports");
-const DataBatch = require("../../src/resources/DataStore");
+const DataStore = require("../../src/resources/DataStore");
 const RequestResults = require("../../src/constants/RequestResults");
 
 let req = null;
@@ -58,7 +58,7 @@ describe("test batch send", () => {
     const FIELDS = ["foo", "bar"];
 
     it("checks empty request is true", () => {
-        const batch = new DataBatch(FIELDS);
+        const batch = new DataStore(FIELDS);
         fakeImportRequester.reset();
         const cb = (resp) => {
             const req = fakeImportRequester.getLastRequest();
@@ -69,7 +69,7 @@ describe("test batch send", () => {
     });
 
     it("checks request is right", () => {
-        const batch = new DataBatch(FIELDS);
+        const batch = new DataStore(FIELDS);
         batch.add(0, {foo: 1.0, bar: 2.0});
         batch.add(10, {foo: 3.0, bar: 4.0});
         batch.add(20, {foo: 5.0});
