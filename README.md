@@ -79,10 +79,6 @@ There are two ways to register a `device_id`:
 
 (1) Let iobeam generate one for you:
 ```javascript
-var iobeam = require('iobeam-client');
-
-...
-
 var builder = new iobeam.Builder(PROJECT_ID, PROJECT_TOKEN)
                     .saveToDisk()
                     .register();
@@ -91,23 +87,24 @@ var iobeamClient = builder.build();
 
 (2) Provide your own (must be unique to your project):
 ```javascript
-var iobeam = require('iobeam-client');
+// Just specifying the device id:
+var device = new iobeam.Device('my_desired_id');
+// Specifying a device id, name, and type:
+var device = new iobeam.Device('my_desired_id', 'device_name', 'device_type');
 
-...
-
-var deviceSpec = {deviceId: 'my_desired_id'};
+// Register it during initialization
 var builder = new iobeam.Builder(PROJECT_ID, PROJECT_TOKEN)
                     .saveToDisk()
-                    .register(deviceSpec);
+                    .register(device);
 var iobeamClient = builder.build();
 ```
 
 With the `saveToDisk()` call, the `device_id` will be saved to disk at the
-path provided (if, like in our example, a path isn't provided, it will use
-the current directory).
+path (optionally) provided (default is to use the current directory).
 On future calls, this on-disk storage will be read first.
-If a `device_id` exists, the `registerDevice` will do nothing; otherwise,
-it will get a new random ID from us. If you provide a _different_ `device_id` to `registerDevice`, the old one will be replaced.
+If the file exists and no id is provided to `register()`,
+the one from the file will be used. If the file exists and a _different_ id is
+provided, the old one will be replaced.
 
 **With a registered `device_id`**
 
@@ -115,10 +112,6 @@ If you have registered a `device_id` (e.g. using our
 [CLI](https://github.com/iobeam/iobeam)), you can pass this in the
 constructor and skip the registration step.
 ```javascript
-var iobeam = require('iobeam-client');
-
-...
-
 var builder = new iobeam.Builder(PROJECT_ID, PROJECT_TOKEN)
                     .saveToDisk()
                     .setDeviceId(DEVICE_ID);
@@ -131,17 +124,16 @@ installation, etc) for this to work.
 **Advanced: not saving to disk**
 
 If you don't want the `device_id` to be automatically stored for you, simply
-exclude the `setSavePath()` call while building:
+exclude the `saveToDisk()` call while building:
 ```javascript
-var builder = new iobeam.Builder(PROJECT_ID, PROJECT_TOKEN).register()
-var iobeamClient = builder.build()
+var builder = new iobeam.Builder(PROJECT_ID, PROJECT_TOKEN).register();
+var iobeamClient = builder.build();
 ```
 
 This is useful for cases where you want to persist the ID yourself (e.g.
 in a settings file), or if you are making clients that are
-temporary. For example, if the device you are using acts as a relay or
-proxy for other devices, it could get the `device_id` from those devices
-and have no need to save it.
+temporary. For example, if you are writing a proxy for other devices, those
+devices will provide the id needed for the iobeam client.
 
 ### Tracking Time-series Data
 
@@ -156,8 +148,8 @@ var conditions = iobeamClient.createDataStore(["temperature", "humidity"]);
 The columns are a list of strings. You should group series that are collected
 on the same measurement cycle together. For example, if you collect temperature
 and humidity every 10s, you should group them together; however, if you also
-collect another metric only every 30s, that should get its own `DataStore`.  Then,
-when you have a measurement, add it to the store as an object, where values
+collect another metric only every 30s, that should get its own `DataStore`.
+Then, when you have a measurement, add it to the store as an object, where values
 are keyed by the series they belong to:
 ```javascript
 var now = Date.now();
@@ -196,11 +188,13 @@ var builder = new iobeam.Builder(PROJECT_ID, PROJECT_TOKEN)
                     .register();
 var iobeamClient = builder.build();
 
+// Data store initialization
+var conditions = iobeamClient.createDataStore(["temperature", "humidity"]);
+
 ...
 
 // Data gathering
 var now = Date.now();
-var conditions = iobeamClient.createDataStore(["temperature", "humidity"]);
 conditions.add(now, {temperature: getTemperature(), humidity: getHumidity()});
 
 ...
