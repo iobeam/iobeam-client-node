@@ -5,9 +5,9 @@ const Utils = require("../utils/Utils");
  * Represents a device.
  * @constructor
  * @param {string} id - Device id
- * @param {string} name - Human readable device names
- * @param {type} type - Device type
- * @returns {object} Object representing a device.
+ * @param {string} [name] - Human readable device names
+ * @param {type} [type] - Device type
+ * @returns {object} A Device object with the given parameters.
  */
 function Device(id, name, type, created) {
     const _id = id || null;

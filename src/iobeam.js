@@ -144,28 +144,26 @@ function _Client(projectId, projectToken, services, requester,
 
         /**
          * Register this client with a device
-         * @param {Device} device - Optional: register device with same parameters as this one.
-         * @param {function} callback - Optional: function to call upon completion. It can take
+         * @param {Device} [device] - Register device with same parameters as this Device object.
+         * @param {function} [callback] - Function to call upon completion. It can take
          * 3 arguments: success (bool), device object, and error.
-         * @param {bool} setOnDupe - If true, will set this client to use the device
+         * @param {bool} [setOnDupe] - If true, will set this client to use the device
          * if it already is registered.
          */
         register: function(deviceId, deviceName, callback, setOnDupe, deviceType) {
-            let did = deviceId || null;
-            let dname = deviceName || null;
-            let dtype = deviceType || null;
+            let dev;
             let givenCb = callback || null;
             let setDupe = setOnDupe || false;
             // Support the old way above, but new way below.
             if (deviceId instanceof Device) {
-                did = deviceId.getId();
-                dname = deviceId.getName();
-                dtype = deviceId.getType();
+                dev = deviceId;
                 givenCb = deviceName || null;
                 setDupe = callback || false;
-            } else {
+            } else if (deviceId) {
                 console.warn("Please use iobeam.Device as the first argument");
+                dev = new Device(deviceId, deviceName, deviceType);
             }
+            const did = dev.getId();
 
             if (!__hasService("devices")) {
                 return; // TODO throw exception
@@ -198,14 +196,14 @@ function _Client(projectId, projectToken, services, requester,
 
             __checkToken();
             _msgQueue.push(function() {
-                _services.devices.register(_projectId, cb, did, dname, dtype);
+                _services.devices.register(_projectId, cb, dev);
             });
             __startMsgQueue();
         },
 
         /**
          * Send data stored in the client.
-         * @param {function} callback - Function to call with response
+         * @param {function} [callback] - Function to call with response
          */
         send: function(callback) {
             if (!__hasService("imports")) {
