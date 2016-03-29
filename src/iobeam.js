@@ -154,16 +154,22 @@ function _Client(projectId, projectToken, services, requester,
             let dev;
             let givenCb = callback || null;
             let setDupe = setOnDupe || false;
-            // Support the old way above, but new way below.
+
             if (deviceId instanceof Device) {
                 dev = deviceId;
                 givenCb = deviceName || null;
                 setDupe = callback || false;
-            } else if (deviceId) {
+            } else if (typeof deviceId === "string") {
                 console.warn("Please use iobeam.Device as the first argument");
                 dev = new Device(deviceId, deviceName, deviceType);
+            } else if (typeof callback === "function") {
+                console.warn("Please use iobeam.Device as the first argument");
+            } else if (typeof deviceName === "function") {
+                givenCb = deviceName || null;
+                setDupe = callback || false;
             }
-            const did = dev.getId();
+
+            const did = dev ? dev.getId() : null;
 
             if (!__hasService("devices")) {
                 return; // TODO throw exception
