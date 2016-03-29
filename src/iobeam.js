@@ -15,6 +15,13 @@ const Device = require("./resources/Device");
 const _ID_FILENAME = "/iobeam_device_id";
 const UTF8_ENC = "utf8";
 
+function __callUserCallback(cb /*, arg1, arg2, ...*/) {
+    const cbArgs = Array.prototype.slice.call(arguments, 1);
+    if (Utils.isCallback(cb)) {
+        cb.apply(this, cbArgs);
+    }
+}
+
 function _Client(projectId, projectToken, services, requester,
                  deviceId, p) {
     Utils.assertValidProjectId(projectId);
@@ -69,15 +76,18 @@ function _Client(projectId, projectToken, services, requester,
         }
     }
 
+    // Let the message queue progress
+    function __msgDone() {
+        _inProgress = false;
+        __startMsgQueue();
+    }
+
     function __setNewToken(resp) {
         if (resp.success) {
             _token = resp.body.token;
             __initServices();
         }
-
-        // Let the message queue progress
-        _inProgress = false;
-        __startMsgQueue();
+        __msgDone();
     }
 
     function __checkToken() {
@@ -134,48 +144,61 @@ function _Client(projectId, projectToken, services, requester,
 
         /**
          * Register this client with a device
-         * @param {string} deviceId - Optional: desired device id
-         * @param {string} deviceName - Optional: desired device name
-         * @param {function} callback - Optional: function to call with response
-         * @param {bool} setOnDupe - If true, will set this client to use the deviceId
-         * if it already exists.
-         * @param {string} deviceType - Optional: desired device type
+         * @param {Device} device - Optional: register device with same parameters as this one.
+         * @param {function} callback - Optional: function to call upon completion. It can take
+         * 3 arguments: success (bool), device object, and error.
+         * @param {bool} setOnDupe - If true, will set this client to use the device
+         * if it already is registered.
          */
         register: function(deviceId, deviceName, callback, setOnDupe, deviceType) {
-            deviceId = deviceId || null;
-            setOnDupe = setOnDupe || false;
+            let did = deviceId || null;
+            let dname = deviceName || null;
+            let dtype = deviceType || null;
+            let givenCb = callback || null;
+            let setDupe = setOnDupe || false;
+            // Support the old way above, but new way below.
+            if (deviceId instanceof Device) {
+                did = deviceId.getId();
+                dname = deviceId.getName();
+                dtype = deviceId.getType();
+                givenCb = deviceName || null;
+                setDupe = callback || false;
+            } else {
+                console.warn("Please use iobeam.Device as the first argument");
+            }
+
             if (!__hasService("devices")) {
                 return; // TODO throw exception
-            } else if (_deviceId !== null && deviceId === _deviceId) {
-                return;
-            } else if (_deviceId !== null && deviceId === null) {
+            } else if (_deviceId !== null && (did === _deviceId || did === null)) {
                 return;
             }
 
             const cb = function(deviceResp) {
-                if (deviceResp.success) {
+                let success = deviceResp.success;
+                let device = null;
+                let error = deviceResp.error;
+
+                if (success) {
                     __setDeviceId(deviceResp.device.getId());
-                } else if (setOnDupe && deviceResp.error && deviceResp.error.code === 150) {
-                    __setDeviceId(deviceId);
-                    deviceResp.success = true;
-                    deviceResp.device = new Device(deviceId);
+                    device = deviceResp.device;
+                    error = null;
+                } else if (setDupe && deviceResp.error && deviceResp.error.code === 150) {
+                    __setDeviceId(did);
+                    success = true;
+                    error = null;
+                    device = new Device(did);
                     /* TODO(rrk): Deprecated, remove in v0.8.0 */
-                    deviceResp.device.device_id = deviceResp.device.getId();
+                    device.device_id = device.getId();
                     // TODO what about device name?
                 }
 
-                if (Utils.isCallback(callback)) {
-                    callback(deviceResp.success, deviceResp.device);
-                }
-
-                // Let the message queue progress
-                _inProgress = false;
-                __startMsgQueue();
+                __callUserCallback(givenCb, success, device, error);
+                __msgDone();
             };
 
             __checkToken();
             _msgQueue.push(function() {
-                _services.devices.register(_projectId, cb, deviceId, deviceName, deviceType);
+                _services.devices.register(_projectId, cb, did, dname, dtype);
             });
             __startMsgQueue();
         },
@@ -190,17 +213,14 @@ function _Client(projectId, projectToken, services, requester,
             }
 
             const cb = function(resp) {
-                if (Utils.isCallback(callback)) {
-                    callback(resp.success);
-                }
                 _batches.shift();
 
-                _inProgress = false;
-                __startMsgQueue();
+                __callUserCallback(callback, resp.success);
+                __msgDone();
             };
 
             __checkToken();
-            for (let i in _batches) {
+            for (let i = 0; i < _batches.length; i++) {
                 const b = _batches[i];
                 if (b.rows().length === 0) {
                     callback(true);
@@ -224,7 +244,7 @@ function _Client(projectId, projectToken, services, requester,
  * @param {int} projectId - The project this client is for
  * @param {string} projectToken - The token to use for this project
  */
-function _Builder(projectId, projectToken) {
+function Builder(projectId, projectToken) {
     Utils.assertValidProjectId(projectId);
     Utils.assertValidToken(projectToken);
     Utils.assertValidRequester(Requester);
@@ -266,11 +286,8 @@ function _Builder(projectId, projectToken) {
          * current directory will be used.
          */
         saveToDisk: function(path) {
-            let p = path || null;
-            if (p === null) {
-                p = ".";
-            }
-            if (p !== null && typeof(p) === "string") {
+            let p = path || ".";
+            if (typeof(p) === "string") {
                 _savePath = p;
             }
             return this;
@@ -278,13 +295,13 @@ function _Builder(projectId, projectToken) {
 
         /**
          * Register this device using the client.
-         * @param {object} deviceSpec - An object with two fields, `deviceId`
-         * and `deviceName`, which are used if to manually specify id or name
-         * for this device.
+         * @param {Device} deviceSpec - An iobeam.Device object that specifies
+         * the properties of the device you want to register.
          * @param {function} callback - Callback to run after register call,
-         * takes two params:
-         *      (1) a boolean 'success' on whether it succeeded; and
-         *      (2) if successful, a device object (undefined otherwise).
+         * takes three params:
+         *      (1) a boolean 'success' on whether it succeeded;
+         *      (2) if successful, a device object (null otherwise); and
+         *      (3) if unsuccessful, an error string of what went wrong.
          * @param {boolean} setOnDupe - Sets client deviceId if register call
          * fails with duplicate error message
          */
@@ -293,22 +310,23 @@ function _Builder(projectId, projectToken) {
                 callback: callback,
                 setOnDupe: (setOnDupe || false)
             };
-            if (deviceSpec) {
-                if (deviceSpec.deviceId) {
-                    _regArgs.deviceId = deviceSpec.deviceId;
-                }
-                if (deviceSpec.deviceName) {
-                    _regArgs.deviceName = deviceSpec.deviceName;
-                }
-                if (deviceSpec.deviceType) {
-                    _regArgs.deviceType = deviceSpec.deviceType;
-                }
+            if (deviceSpec instanceof Device) {
+                _regArgs.device = deviceSpec;
+            } else if (deviceSpec) {
+                /* TODO(rrk): Remove in v0.8.0 */
+                console.warn("Please use a iobeam.Device object instead of a 'deviceSpec'.");
+                _regArgs.device = new Device(deviceSpec.deviceId, deviceSpec.deviceName,
+                    deviceSpec.deviceType);
             }
             return this;
         },
 
+        /**
+         * Register using this device id. If already present on iobeam, use
+         * this id. Alias for 'register(new Device(deviceId), callback, true)'.
+         */
         registerOrSetId: function(deviceId, callback) {
-            return this.register({deviceId: deviceId}, callback, true);
+            return this.register(new Device(deviceId), callback, true);
         },
 
         /**
@@ -318,9 +336,7 @@ function _Builder(projectId, projectToken) {
             const client = _Client(projectId, projectToken, services, _backend,
                                    _deviceId, _savePath);
             if (_regArgs !== null) {
-                client.register(_regArgs.deviceId, _regArgs.deviceName,
-                                _regArgs.callback, _regArgs.setOnDupe,
-                                _regArgs.deviceType);
+                client.register(_regArgs.device, _regArgs.callback, _regArgs.setOnDupe);
             }
             return client;
         }
@@ -328,7 +344,7 @@ function _Builder(projectId, projectToken) {
 }
 
 module.exports = {
-    Builder: _Builder,
+    Builder: Builder,
     DataStore: DataStore,
     Device: Device
 };

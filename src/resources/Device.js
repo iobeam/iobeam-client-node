@@ -22,6 +22,19 @@ function Device(id, name, type, created) {
     this.getId = () => _id;
     this.getName = () => _name;
     this.getType = () => _type;
+    this.toJSON = () => {
+        const ret = {id: _id};
+        if (_name) {
+            ret.name = _name;
+        }
+        if (_type) {
+            ret.type = _type;
+        }
+        if (_created) {
+            ret.created = _created;
+        }
+        return ret;
+    };
 }
 
 module.exports = Device;
