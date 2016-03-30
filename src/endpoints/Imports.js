@@ -73,9 +73,13 @@ module.exports = {
             }
             return;
         }
+
+        const context = {
+            projectId: projectId,
+            deviceId: deviceId,
+            store: store.snapshot()
+        };
         const URL = _requester.getFullEndpoint("/imports?fmt=table");
-
-
         const reqBody = {
             project_id: parseInt(projectId),
             device_id: deviceId
@@ -102,7 +106,7 @@ module.exports = {
         };
 
         const req = _requester.postRequest(URL, reqBody, _token);
-        const innerCb = Utils.createInnerCb(callback, null, function() {});
+        const innerCb = Utils.createInnerCb(callback, context, function() {});
         _requester.execute(req, innerCb);
     }
 };
