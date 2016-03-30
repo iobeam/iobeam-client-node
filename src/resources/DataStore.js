@@ -6,13 +6,15 @@ const _reserved = ["time", "time_offset", "all"];
 
 const _DataStore = function(fields, rows) {
     const lower = [];
-    for (let f of fields) {
+    for (let i = 0; i < fields.length; i++) {
+        const f = fields[i];
         if (f === undefined || f === null || f === "" || typeof(f) !== "string") {
             throw new Exception("Column name cannot be empty");
         }
         lower.push(f.toLowerCase());
     }
-    for (let r of _reserved) {
+    for (let i = 0; i < _reserved.length; i++) {
+        const r = _reserved[i];
         if (lower.indexOf(r) >= 0) {
             throw new Exception("'" + r + "' is a reserved column name");
         }
@@ -70,13 +72,16 @@ const _DataStore = function(fields, rows) {
     /* Get the list of rows in this store */
     this.rows = function() {
         const ret = [];
-        _rows.forEach(function(r) {
+        for (let i = 0; i < _rows.length; i++) {
+            const r = _rows[i];
             const temp = {};
-            Object.keys(r).forEach(function(k) {
+            const keys = Object.keys(r);
+            for (let j = 0; j < keys.length; j++) {
+                const k = keys[j];
                 temp[k] = r[k];
-            });
+            }
             ret.push(temp);
-        });
+        }
         return ret;
     };
 
