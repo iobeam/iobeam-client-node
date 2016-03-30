@@ -216,10 +216,8 @@ function _Client(projectId, projectToken, services, requester,
                 return; // TODO throw exception
             }
 
-            const cb = function(resp) {
-                _batches.shift();
-
-                __callUserCallback(callback, resp.success);
+            const cb = function(resp, context) {
+                __callUserCallback(callback, resp.success, context.store);
                 __msgDone();
             };
 
@@ -227,12 +225,15 @@ function _Client(projectId, projectToken, services, requester,
             for (let i = 0; i < _batches.length; i++) {
                 const b = _batches[i];
                 if (b.rows().length === 0) {
-                    callback(true);
+                    callback(true, b);
                     continue;
                 }
+
+                const snapshot = b.snapshot();
+                b.reset();
                 _msgQueue.push(function() {
                     Utils.assertValidDeviceId(_deviceId);
-                    _services.imports.importBatch(_projectId, _deviceId, b, cb);
+                    _services.imports.importBatch(_projectId, _deviceId, snapshot, cb);
                 });
             }
             __startMsgQueue();
