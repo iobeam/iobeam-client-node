@@ -1,6 +1,6 @@
 {
   "name": "iobeam-client",
-  "version": "0.7.0",
+  "version": "0.7.1-beta",
   "description": "Client library for connecting to iobeam",
   "repository": "https://github.com/iobeam/iobeam-client-node",
   "license": "Apache-2.0",
@@ -10,7 +10,7 @@
     "jsonwebtoken": "5.7.x",
     "keymirror": "~0.1.1",
     "semver": "5.1.x",
-    "superagent": "1.6.x"
+    "superagent": "1.8.x"
   },
   "devDependencies": {
     "babel-cli": "^6.0.0",
