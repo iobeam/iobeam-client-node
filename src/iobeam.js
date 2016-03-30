@@ -124,7 +124,7 @@ function _Client(projectId, projectToken, services, requester,
         },
 
         /**
-         * Add a DataStore to be sent.
+         * Add a DataStore to be tracked and sent on subsequent send() calls.
          * @param {DataStore} dataStore - Store of data o be sent.
          */
         addDataStore: function(dataStore) {
@@ -132,7 +132,7 @@ function _Client(projectId, projectToken, services, requester,
         },
 
         /**
-         * Create and track DataStore to be sent.
+         * Create and track DataStore to be sent on subsequent send() calls.
          * @param {array} columns - Columns to track in the DataStore.
          * @return {DataStore} DataStore object in which to add data.
          */
@@ -143,7 +143,9 @@ function _Client(projectId, projectToken, services, requester,
         },
 
         /**
-         * Register this client with a device
+         * Register this client with a device. Any registration call that is made before a send()
+         * call is guaranteed to finish before the send() call is started.
+         *
          * @param {Device} [device] - Register device with same parameters as this Device object.
          * @param {function} [callback] - Function to call upon completion. It can take
          * 3 arguments: success (bool), device object, and error.
@@ -208,8 +210,10 @@ function _Client(projectId, projectToken, services, requester,
         },
 
         /**
-         * Send data stored in the client.
-         * @param {function} [callback] - Function to call with response
+         * Send data stored in the client. DataStores associated with the client
+         * object are copied and then reset (i.e. emptied of data). Each DataStore
+         * copy is then sent to iobeam.
+         * @param {function} [callback] - Function to call with response taking a boolean.
          */
         send: function(callback) {
             if (!__hasService("imports")) {
