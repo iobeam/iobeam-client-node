@@ -35,6 +35,7 @@ describe("DataStore construction", () => {
         const batch = new DataStore(FIELDS);
         const have = batch.fields();
         expect(have.length).toBe(FIELDS.length);
+        expect(batch instanceof DataStore).toBe(true);
         for (let i = 0; i < FIELDS.length; i++) {
             expect(have[i]).toBe(FIELDS[i]);
         }
@@ -45,6 +46,7 @@ describe("DataStore construction", () => {
         const batch = new DataStore(temp);
         let have = batch.fields();
         expect(have.length).toBe(temp.length);
+        expect(batch instanceof DataStore).toBe(true);
         for (let i = 0; i < temp.length; i++) {
             expect(have[i]).toBe(temp[i]);
         }
@@ -61,7 +63,8 @@ describe("adding to batches", () => {
             expect(have.foo).toBe(wantData.foo);
             expect(have.bar).toBe(wantData.bar);
             expect(have.baz).toBe(wantData.baz);
-        }
+        };
+
         const batch = new DataStore(FIELDS);
         const row1 = {foo: 1.0, bar: 2.0, baz: 3.0};
         batch.add(0, row1);
@@ -122,7 +125,8 @@ describe("add now", () => {
         expect(have.foo).toBe(wantData.foo);
         expect(have.bar).toBe(wantData.bar);
         expect(have.baz).toBe(wantData.baz);
-    }
+    };
+
     it("tests functionality", () => {
         let now = 1000;
         MockDate.set(now);
@@ -187,6 +191,7 @@ describe("tests snapshot", () => {
 
     it("tests snapshot is a copy", () => {
         const batch2 = batch.snapshot();
+        expect(batch2 instanceof DataStore).toBe(true);
         expect(batch2.size()).toBe(batch.size());
         expect(batch2.rows().length).toBe(batch.rows().length);
         for (let i = 0; i < batch2.fields().length; i++ ) {
@@ -204,6 +209,7 @@ describe("tests snapshot", () => {
 
     it("tests snapshot is deep copy", () => {
         const batch2 = batch.snapshot();
+        expect(batch2 instanceof DataStore).toBe(true);
         expect(batch2.size()).toBe(batch.size());
         expect(batch2.rows().length).toBe(batch.rows().length);
 
