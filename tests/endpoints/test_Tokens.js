@@ -81,6 +81,16 @@ describe("test project token", () => {
             Tokens.getProjectToken(c.pid, perms, c.token, badCb);
         });
     });
+
+    const badPerms = "read: true";
+    it("throws exception on bad perms", () => {
+        try {
+            Tokens.getProjectToken(1, badPerms, "ok");
+            expect(false).toBe(true);
+        } catch (err) {
+            expect(true).toBe(true);
+        }
+    });
 });
 
 describe("test refresh project token", () => {
