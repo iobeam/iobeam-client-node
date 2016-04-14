@@ -7,7 +7,8 @@ const Utils = require("../utils/Utils");
 let _requester = null;
 
 function assertValidPermissions(perms) {
-    if (perms === null || typeof(perms) !== "object") {
+
+    if (perms === null || !(perms instanceof Object)) {
         throw new ApiException("permissions must be an object");
     }
 }
