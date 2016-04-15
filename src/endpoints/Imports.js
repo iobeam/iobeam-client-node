@@ -106,7 +106,14 @@ module.exports = {
         };
 
         const req = _requester.postRequest(URL, reqBody, _token);
-        const innerCb = Utils.createInnerCb(callback, context, function() {});
+        const bodyHandler = function(resp, body, status) {
+            if (status === RequestResults.FAILURE) {
+                if (body && body.errors) {
+                    resp.error = body.errors[0];
+                }
+            }
+        };
+        const innerCb = Utils.createInnerCb(callback, context, bodyHandler);
         _requester.execute(req, innerCb);
     }
 };
