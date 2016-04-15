@@ -176,6 +176,7 @@ function _Client(projectId, projectToken, services, requester,
             if (!__hasService("devices")) {
                 return; // TODO throw exception
             } else if (_deviceId !== null && (did === _deviceId || did === null)) {
+                __callUserCallback(givenCb, true, dev, null);
                 return;
             }
 
@@ -221,7 +222,7 @@ function _Client(projectId, projectToken, services, requester,
             }
 
             const cb = function(resp, context) {
-                __callUserCallback(callback, resp.success, context.store);
+                __callUserCallback(callback, resp.success, context.store, resp.error);
                 __msgDone();
             };
 
@@ -229,7 +230,7 @@ function _Client(projectId, projectToken, services, requester,
             for (let i = 0; i < _batches.length; i++) {
                 const b = _batches[i];
                 if (b.rows().length === 0) {
-                    callback(true, b);
+                    __callUserCallback(callback, true, b);
                     continue;
                 }
 
