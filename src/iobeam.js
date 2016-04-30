@@ -194,7 +194,7 @@ function _Client(projectId, projectToken, services, requester,
                     success = true;
                     error = null;
                     device = new Device(did);
-                    /* TODO(rrk): Deprecated, remove in v0.8.0 */
+                    /* TODO(rrk): Deprecated, remove in v0.9.0 */
                     device.device_id = device.getId();
                     // TODO what about device name?
                 }
@@ -203,9 +203,18 @@ function _Client(projectId, projectToken, services, requester,
                 __msgDone();
             };
 
-            __checkToken();
+            try {
+                __checkToken();
+            } catch (err) {
+                __callUserCallback(callback, false, null, err);
+                return;
+            }
             _msgQueue.push(function() {
-                _services.devices.register(_projectId, cb, dev);
+                try {
+                    _services.devices.register(_projectId, cb, dev);
+                } catch (err) {
+                    __callUserCallback(callback, false, dev, err.message);
+                }
             });
             __startMsgQueue();
         },
@@ -214,7 +223,9 @@ function _Client(projectId, projectToken, services, requester,
          * Send data stored in the client. DataStores associated with the client
          * object are copied and then reset (i.e. emptied of data). Each DataStore
          * copy is then sent to iobeam.
-         * @param {function} [callback] - Function to call with response taking a boolean.
+         * @param {function} [callback] - Function to call with response taking a boolean, as
+         * well as optional arguments of the DataStore it applies the callback applies to and
+         * any error that was caused.
          */
         send: function(callback) {
             if (!__hasService("imports")) {
@@ -226,7 +237,13 @@ function _Client(projectId, projectToken, services, requester,
                 __msgDone();
             };
 
-            __checkToken();
+            try {
+                __checkToken();
+            } catch (err) {
+                __callUserCallback(callback, false, null, err);
+                return;
+            }
+
             for (let i = 0; i < _batches.length; i++) {
                 const b = _batches[i];
                 if (b.rows().length === 0) {
@@ -237,8 +254,12 @@ function _Client(projectId, projectToken, services, requester,
                 const snapshot = b.snapshot();
                 b.reset();
                 _msgQueue.push(function() {
-                    Utils.assertValidDeviceId(_deviceId);
-                    _services.imports.importBatch(_projectId, _deviceId, snapshot, cb);
+                    try {
+                        Utils.assertValidDeviceId(_deviceId);
+                        _services.imports.importBatch(_projectId, _deviceId, snapshot, cb);
+                    } catch (err) {
+                        __callUserCallback(callback, false, snapshot, err.message);
+                    }
                 });
             }
             __startMsgQueue();
@@ -323,7 +344,7 @@ function Builder(projectId, projectToken) {
             if (deviceSpec instanceof Device) {
                 _regArgs.device = deviceSpec;
             } else if (deviceSpec) {
-                /* TODO(rrk): Remove in v0.8.0 */
+                /* TODO(rrk): Remove in v0.9.0 */
                 console.warn("Please use a iobeam.Device object instead of a 'deviceSpec'.");
                 _regArgs.device = new Device(deviceSpec.deviceId, deviceSpec.deviceName,
                     deviceSpec.deviceType);
