@@ -6,8 +6,8 @@
   "license": "Apache-2.0",
   "main": "lib/iobeam.js",
   "dependencies": {
-    "fs-extra": "0.27.x",
-    "jsonwebtoken": "5.7.x",
+    "fs-extra": "0.30.x",
+    "jsonwebtoken": "6.2.x",
     "keymirror": "~0.1.1",
     "semver": "5.1.x",
     "superagent": "1.8.x"
@@ -15,11 +15,11 @@
   "devDependencies": {
     "babel-cli": "^6.0.0",
     "babel-preset-es2015": "^6.0.0",
-    "eslint": "2.8.x",
+    "eslint": "2.9.x",
     "mockdate": "1.0.x"
   },
   "optionalDependencies": {
-    "jest-cli": "11.0.x"
+    "jest-cli": "12.0.x"
   },
   "scripts": {
     "lint": "eslint src/ || echo",
