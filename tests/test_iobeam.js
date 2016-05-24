@@ -11,8 +11,7 @@ describe("test import error callback", () => {
         const client = new iobeam.Builder(1, TOKEN).build();
         const ds = client.createDataStore(["temperature"]);
         ds.addNow({temperature: 72.0});
-        const callback = (success, context, error) => {
-            expect(success).toBe(false);
+        const callback = (error) => {
             expect(error).not.toBeNull();
         };
         client.send(callback);

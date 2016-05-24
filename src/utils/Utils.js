@@ -42,7 +42,7 @@ module.exports = {
 
             const resp = utils.getDefaultApiResp(status, webResp);
             if (!resp.timeout) {
-                const body = webResp.type === "application/json" ? webResp.body : webResp.text;
+                const body = (webResp.type === "application/json") ? webResp.body : webResp.text;
                 handleBody(resp, body, status);
             }
             callback(resp, context);
