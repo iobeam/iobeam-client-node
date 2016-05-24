@@ -176,44 +176,42 @@ function _Client(projectId, projectToken, services, requester,
             if (!__hasService("devices")) {
                 return; // TODO throw exception
             } else if (_deviceId !== null && (did === _deviceId || did === null)) {
-                __callUserCallback(givenCb, true, dev, null);
+                __callUserCallback(givenCb, null, dev);
                 return;
             }
 
-            const cb = function(deviceResp) {
-                let success = deviceResp.success;
+            const cb = function(resp) {
+                let success = resp.success;
                 let device = null;
-                let error = deviceResp.error;
+                let error = resp.error;
 
                 if (success) {
-                    __setDeviceId(deviceResp.device.getId());
-                    device = deviceResp.device;
+                    __setDeviceId(resp.device.getId());
+                    device = resp.device;
                     error = null;
-                } else if (setDupe && deviceResp.error && deviceResp.error.code === 150) {
+                } else if (setDupe && resp.error && resp.error.code === 150) {
                     __setDeviceId(did);
                     success = true;
                     error = null;
                     device = new Device(did);
-                    /* TODO(rrk): Deprecated, remove in v0.9.0 */
-                    device.device_id = device.getId();
                     // TODO what about device name?
                 }
 
-                __callUserCallback(givenCb, success, device, error);
+                __callUserCallback(givenCb, error, device);
                 __msgDone();
             };
 
             try {
                 __checkToken();
             } catch (err) {
-                __callUserCallback(callback, false, null, err);
+                __callUserCallback(callback, err, null);
                 return;
             }
             _msgQueue.push(function() {
                 try {
                     _services.devices.register(_projectId, cb, dev);
                 } catch (err) {
-                    __callUserCallback(callback, false, dev, err.message);
+                    __callUserCallback(callback, err.message, dev);
                 }
             });
             __startMsgQueue();
@@ -233,21 +231,21 @@ function _Client(projectId, projectToken, services, requester,
             }
 
             const cb = function(resp, context) {
-                __callUserCallback(callback, resp.success, context.store, resp.error);
+                __callUserCallback(callback, resp.error, context.store);
                 __msgDone();
             };
 
             try {
                 __checkToken();
             } catch (err) {
-                __callUserCallback(callback, false, null, err);
+                __callUserCallback(callback, err, null);
                 return;
             }
 
             for (let i = 0; i < _batches.length; i++) {
                 const b = _batches[i];
                 if (b.rows().length === 0) {
-                    __callUserCallback(callback, true, b);
+                    __callUserCallback(callback, null, b);
                     continue;
                 }
 
@@ -258,7 +256,7 @@ function _Client(projectId, projectToken, services, requester,
                         Utils.assertValidDeviceId(_deviceId);
                         _services.imports.importBatch(_projectId, _deviceId, snapshot, cb);
                     } catch (err) {
-                        __callUserCallback(callback, false, snapshot, err.message);
+                        __callUserCallback(callback, err.message, snapshot);
                     }
                 });
             }
