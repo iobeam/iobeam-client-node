@@ -107,7 +107,7 @@ module.exports = {
 
         const req = _requester.postRequest(URL, reqBody, _token);
         const bodyHandler = function(resp, body, status) {
-            if (status === RequestResults.FAILURE) {
+            if (status !== RequestResults.SUCCESS) {
                 if (body && body.errors) {
                     resp.error = body.errors[0];
                 }

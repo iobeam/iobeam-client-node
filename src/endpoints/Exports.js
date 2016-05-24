@@ -52,7 +52,7 @@ module.exports = {
         const bodyHandler = function(resp, body, status) {
             if (status === RequestResults.SUCCESS) {
                 resp.body = body;
-            } else if (status === RequestResults.FAILURE) {
+            } else if (body && body.errors) {
                 resp.error = body.errors[0].message;
             }
         };
