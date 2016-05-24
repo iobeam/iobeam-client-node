@@ -48,7 +48,7 @@ const _DataStore = function(fields, rows) {
         let row = {time: time};
 
         _fields.forEach(function(f) {
-            const val = data[f] || null;
+            const val = typeof(data[f]) !== "undefined" ? data[f] : null;
             row[f] = val;
         });
         _rows.push(row);

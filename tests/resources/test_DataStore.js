@@ -66,7 +66,7 @@ describe("adding to batches", () => {
         };
 
         const batch = new DataStore(FIELDS);
-        const row1 = {foo: 1.0, bar: 2.0, baz: 3.0};
+        const row1 = {foo: 0.0, bar: 2.0, baz: 3.0};
         batch.add(0, row1);
         let have = batch.rows();
         expect(have.length).toBe(1);
