@@ -36,8 +36,8 @@ module.exports = {
         const bodyCb = function(resp, body, status) {
             if (status === RequestResults.SUCCESS) {
                 resp.body = body;
-            } else if (status === RequestResults.FAILURE) {
-                resp.error = body.errors[0].message;
+            } else if (body && body.errors) {
+                resp.error = body.errors[0];
             }
         };
         const innerCb = Utils.createInnerCb(callback, context, bodyCb);
@@ -67,8 +67,8 @@ module.exports = {
         const bodyCb = function(resp, body, status) {
             if (status === RequestResults.SUCCESS) {
                 resp.body = body;
-            } else if (status === RequestResults.FAILURE) {
-                resp.error = body.errors[0].message;
+            } else if (body && body.errors) {
+                resp.error = body.errors[0];
             }
         };
         const innerCb = Utils.createInnerCb(callback, context, bodyCb);
@@ -88,8 +88,8 @@ module.exports = {
         const bodyHandler = function(resp, body, status) {
             if (status === RequestResults.SUCCESS) {
                 resp.body = body;
-            } else if (status === RequestResults.FAILURE) {
-                resp.error = body.errors[0].message;
+            } else if (body && body.errors) {
+                resp.error = body.errors[0];
             }
         };
         const innerCb = Utils.createInnerCb(callback, context, bodyHandler);

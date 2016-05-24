@@ -15,13 +15,18 @@ function isString(s) {
 module.exports = {
 
     getDefaultApiResp: function(webStatus, webResp) {
-        return {
+        const ret = {
             success: (webStatus === RequestResults.SUCCESS),
             timeout: (webStatus === RequestResults.TIMEOUT),
             allowed: (webStatus !== RequestResults.FORBIDDEN),
             code: webResp ? webResp.status : 0,
             error: null
         };
+        if (ret.timeout) {
+            ret.error = {"message": "Connection time out"};
+        }
+
+        return ret;
     },
 
     createInnerCb: function(callback, context, handleBody) {

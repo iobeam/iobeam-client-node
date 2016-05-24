@@ -104,10 +104,8 @@ module.exports = {
                 if (body.device_type) {
                     resp.device.device_type = resp.device.getType();
                 }
-            } else if (status === RequestResults.FAILURE) {
-                if (body && body.errors) {
-                    resp.error = body.errors[0];
-                }
+            } else if (body && body.errors) {
+                resp.error = body.errors[0];
             }
         };
         const innerCb = Utils.createInnerCb(callback, context, bodyHandler);
