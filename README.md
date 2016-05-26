@@ -169,18 +169,18 @@ iobeamClient.send();
 ```
 
 This call is asynchronous, and you can optionally provide a callback for
-when it returns. The callback will be passed several arguments: (1) a boolean
-of success, (2) the `DataStore` that was sent, and (3) any error.
+when it returns. The callback will be passed several arguments: (1) an error
+if there was one and (2) the `DataStore` that was sent.
 ```javascript
-iobeamClient.send(function(success, datastore, error) {
-    if (!success) {
+iobeamClient.send(function(error, datastore) {
+    if (!error) {
         console.warn(error);
     }
 });
 ```
 
-The callback will be called once per request sent. Each `DataStore` that the client tracks is
-a separate request.
+The callback will be called once per request sent. Each `DataStore` that the
+client tracks is a separate request.
 
 ### Full Example
 
@@ -211,8 +211,8 @@ conditions.add(now, {temperature: getTemperature(), humidity: getHumidity()});
 ...
 
 // Data transmission
-iobeamClient.send(function(success, datastore, error) {
-    if (!success) {
+iobeamClient.send(function(error, datastore) {
+    if (!error) {
         console.warn(error);
     }
 });
