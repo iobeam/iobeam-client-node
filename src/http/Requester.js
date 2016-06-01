@@ -1,5 +1,6 @@
 "use strict";
 const request = require("superagent");
+const Agent = require("https").Agent;
 
 const RequestResults = require("../constants/RequestResults");
 const Utils = require("../utils/Utils");
@@ -11,6 +12,11 @@ const _DEFAULT_URL_BASE = "https://api.iobeam.com/v1";
 
 let _urlBase = _DEFAULT_URL_BASE;
 let _timeout = _DEFAULT_TIMEOUT;
+
+const _agent = new Agent({
+    keepAlive: true,
+    keepAliveMsecs: 15000
+});
 
 module.exports = {
 
@@ -38,9 +44,8 @@ module.exports = {
      */
     execute: function(req, callback, context) {
         callback(RequestResults.PENDING, null, null);
-        //const key = req.req.path;
 
-        req.end(function(err, res) {
+        req.set("Connection", "keep-alive").agent(_agent).end(function(err, res) {
             let result = null;
             if ((err && err.timeout === _timeout) || typeof(res) === "undefined") {
                 result = RequestResults.TIMEOUT;
