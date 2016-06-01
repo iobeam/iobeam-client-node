@@ -67,6 +67,8 @@ describe("execute", () => {
                     cb(e.err, e.res);
                 }
             };
+            req.agent = () => req;
+            req.set = () => req;
             const cb = (status) => {
                 if (status === RequestResults.PENDING) {
                     return;
