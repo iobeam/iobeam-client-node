@@ -27,6 +27,9 @@ module.exports = {
         let endpoint = "/data/" + namespace + "/";
         if (context.seriesName) {
             endpoint = endpoint + context.seriesName + "/";
+        } if (context.deviceID) {
+            opts.where = opts.where || [];
+            opts.where.push("eq(device_id," + context.deviceID + ")");
         }
         const URL = _requester.getFullEndpoint(endpoint);
         context.options = context.options || opts;
