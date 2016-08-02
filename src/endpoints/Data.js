@@ -21,7 +21,7 @@ module.exports = {
             endpoint = endpoint + context.seriesName + "/";
         }
         const URL = _requester.getFullEndpoint(endpoint);
-        context.options = opts;
+        context.options = context.options || opts;
 
         const req = _requester.getRequest(URL, _token);
 
@@ -35,7 +35,7 @@ module.exports = {
             req.query({time: opts.time});
         }
         if (opts.where) {
-            //statement format [comparator, field, value]
+            //statement format: comparator(field, value)
             opts.where.forEach((statement) => {
                 req.query({where: statement});
             });
