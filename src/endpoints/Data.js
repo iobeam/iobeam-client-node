@@ -5,6 +5,14 @@ const Utils = require("../utils/Utils");
 let _token = null;
 let _requester = null;
 
+function setOpt(request, opts, name) {
+    const temp = {};
+    if (opts[name]) {
+        temp[name] = opts[name];
+        request.query(temp);
+    }
+}
+
 module.exports = {
 
     initialize: function(token, requester) {
@@ -25,15 +33,12 @@ module.exports = {
 
         const req = _requester.getRequest(URL, _token);
 
-        if (opts.limit) {
-            req.query({limit: opts.limit});
-        }
-        if (opts.limit_by) {
-            req.query({limit_by: opts.limit_by});
-        }
-        if (opts.time) {
-            req.query({time: opts.time});
-        }
+        setOpt(req, opts, "limit");
+        setOpt(req, opts, "limit_by");
+        setOpt(req, opts, "time");
+        setOpt(req, opts, "timefmt");
+
+        //special cases for options
         if (opts.where) {
             //statement format: comparator(field, value)
             opts.where.forEach((statement) => {
@@ -54,6 +59,7 @@ module.exports = {
         } else {
             console.log("Invalid format for query output");
         }
+
         const bodyHandler = function(resp, body, status) {
             if (status === RequestResults.SUCCESS) {
                 resp.body = body;
