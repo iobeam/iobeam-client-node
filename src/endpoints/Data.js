@@ -22,7 +22,7 @@ module.exports = {
         _requester = requester;
     },
 
-    query: function(namespace, callback, opts = {}, context = {}) {
+    query: function(namespace = "input", callback, opts = {}, context = {}) {
         Utils.assertValidToken(_token);
         let endpoint = "/data/" + namespace + "/";
         if (context.seriesName) {
