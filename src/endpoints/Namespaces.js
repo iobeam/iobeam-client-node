@@ -21,6 +21,7 @@ module.exports = {
             projectId: projectId,
             options: opts
         };
+        const URL = _requester.getFullEndpoint(endpoint);
 
         const req = _requester.getRequest(URL, _token);
         if (opts.name) {
@@ -28,7 +29,6 @@ module.exports = {
         } else if (opts.namespaceID) {
             endpoint = endpoint + opts.namespaceID;
         }
-        const URL = _requester.getFullEndpoint(endpoint);
 
         const bodyHandler = function(resp, body, status) {
             if (status === RequestResults.SUCCESS) {
