@@ -27,7 +27,8 @@ module.exports = {
         let endpoint = "/data/" + namespace + "/";
         if (context.fieldName) {
             endpoint = endpoint + context.fieldName + "/";
-        } if (context.deviceId) {
+        }
+        if (context.deviceId) {
             opts.where = opts.where || [];
             opts.where.push("eq(device_id," + context.deviceId + ")");
         }
@@ -73,5 +74,6 @@ module.exports = {
         };
         const innerCb = Utils.createInnerCb(callback, context, bodyHandler);
         _requester.execute(req, innerCb);
+        opts.where = [];
     }
 };
