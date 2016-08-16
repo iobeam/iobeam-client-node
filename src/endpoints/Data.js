@@ -25,11 +25,12 @@ module.exports = {
     query: function(namespace = "input", callback, opts = {}, context = {}) {
         Utils.assertValidToken(_token);
         let endpoint = "/data/" + namespace + "/";
-        if (context.seriesName) {
-            endpoint = endpoint + context.seriesName + "/";
-        } if (context.deviceID) {
+        if (context.fieldName) {
+            endpoint = endpoint + context.fieldName + "/";
+        }
+        if (context.deviceId) {
             opts.where = opts.where || [];
-            opts.where.push("eq(device_id," + context.deviceID + ")");
+            opts.where.push("eq(device_id," + context.deviceId + ")");
         }
         const URL = _requester.getFullEndpoint(endpoint);
         context.options = context.options || opts;
@@ -59,8 +60,9 @@ module.exports = {
         }
         if (opts.output === "csv" || opts.output === "json") {
             req.query({output: opts.output});
-        } else {
-            console.log("Invalid format for query output");
+        } else if (opts.output) {
+            console.log("Output set to json format");
+            req.query({output: "json"});
         }
 
         const bodyHandler = function(resp, body, status) {
@@ -72,5 +74,6 @@ module.exports = {
         };
         const innerCb = Utils.createInnerCb(callback, context, bodyHandler);
         _requester.execute(req, innerCb);
+        opts.where = [];
     }
 };
