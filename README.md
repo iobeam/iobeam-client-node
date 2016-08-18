@@ -173,7 +173,7 @@ when it returns. The callback will be passed several arguments: (1) an error
 if there was one and (2) the `DataStore` that was sent.
 ```javascript
 iobeamClient.send(function(error, datastore) {
-    if (!error) {
+    if (error) {
         console.warn(error);
     }
 });
@@ -212,7 +212,7 @@ conditions.add(now, {temperature: getTemperature(), humidity: getHumidity()});
 
 // Data transmission
 iobeamClient.send(function(error, datastore) {
-    if (!error) {
+    if (error) {
         console.warn(error);
     }
 });
